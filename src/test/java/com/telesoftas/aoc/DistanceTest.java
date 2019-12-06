@@ -14,7 +14,7 @@ class DistanceTest {
     void name() {
         Distance sut = new Distance();
 
-        Set<Point> wire = sut.calculateCoords("R2,U1,L1,D1");
+        var wire = sut.calculateCoords("R2,U1,L1,D1");
 
         assertAll(
             () -> assertEquals(4, wire.size()),
