@@ -1,5 +1,9 @@
 package com.telesoftas.aoc;
 
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
+
 import java.util.stream.IntStream;
 
 public class Passwords {
@@ -11,10 +15,19 @@ public class Passwords {
         return IntStream.rangeClosed(108457, 562041)
             .filter(this::hasDoubleDigits)
             .filter(this::isIncreasingOrEqual)
+            .filter(this::validGroups)
 //            .filter(value -> {
 //                return this.isIncreasingOrEqual(value) && String.valueOf(value).chars().distinct().count() < 6;
 //            })
             .count();
+    }
+
+    public boolean validGroups(final int password) {
+        return String.valueOf(password)
+            .chars()
+            .boxed()
+            .collect(groupingBy(identity(), counting()))
+            .containsValue(2L);
     }
 
     public boolean hasDoubleDigits(final int password) {

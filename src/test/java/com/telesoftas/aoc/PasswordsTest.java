@@ -31,6 +31,13 @@ class PasswordsTest {
     }
 
     @Test
+    void name() {
+        assertTrue(pass.validGroups(112233));
+        assertFalse(pass.validGroups(123444));
+        assertTrue(pass.validGroups(111122));
+    }
+
+    @Test
     void next_valid_password() {
 
         var next = pass.count();
