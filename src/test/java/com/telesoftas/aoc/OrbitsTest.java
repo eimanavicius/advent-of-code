@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Map;
+import java.util.Set;
+
 public class OrbitsTest {
 
     private Orbits orbits = new Orbits();
@@ -1615,7 +1618,8 @@ public class OrbitsTest {
 
     @Test
     public void testInputIsParsedIntoMap() {
-        assertEquals(1604, orbits.parseToMap(input).size());
+        Map<String, String> map = orbits.parseToMap(input);
+        assertEquals(1604, map.size());
     }
 
     @Test
@@ -1628,5 +1632,56 @@ public class OrbitsTest {
     @Test
     public void testNumberOfParents() {
         assertEquals(278744, orbits.calculate(orbits.parseToMap(input)));
+    }
+
+    @Test
+    void extracts_path_to_COM() {
+        String input = "COM)B\n" +
+                       "B)C\n" +
+                       "C)D\n" +
+                       "D)E\n" +
+                       "E)F\n" +
+                       "B)G\n" +
+                       "G)H\n" +
+                       "D)I\n" +
+                       "E)J\n" +
+                       "J)K\n" +
+                       "K)L\n" +
+                       "K)YOU\n" +
+                       "I)SAN";
+
+        Map<String, String> map = orbits.parseToMap(input);
+        assertEquals(Set.of("COM", "B", "C", "D", "E", "J", "K"), orbits.extractPathToCOM(map, "YOU"));
+    }
+
+    /**
+     * YOU
+     * /
+     * J - K
+     * /
+     * COM - B - C - D - E
+     * \
+     * I - SAN
+     */
+    @Test
+    void different_orbits_count_from_you_to_san() {
+        String input = "COM)B\n" +
+                       "B)C\n" +
+                       "C)D\n" +
+                       "D)E\n" +
+                       "E)F\n" +
+                       "B)G\n" +
+                       "G)H\n" +
+                       "D)I\n" +
+                       "E)J\n" +
+                       "J)K\n" +
+                       "K)L\n" +
+                       "K)YOU\n" +
+                       "I)SAN";
+
+        assertEquals(4, orbits.findPathDiff(orbits.parseToMap(input), "YOU", "SAN"));
+
+        // puzzle answer
+        assertEquals(475, orbits.findPathDiff(orbits.parseToMap(this.input), "YOU", "SAN"));
     }
 }
