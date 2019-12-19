@@ -18,7 +18,7 @@ class IntcodeTest {
     }
 
     @Test
-    void pase_addition_instruction() {
+    void parse_addition_instruction() {
         String program = "1,1,2,0,99";
 
         Integer[] memory = Intcode.intcode(Intcode.parseIntcodeInput(program), 0, output);
@@ -77,7 +77,7 @@ DE - two-digit opcode,      02 == opcode 2
     }
 
     @Test
-    void name() {
+    void parse_opcode_with_default_position_modes() {
         Opcode opcode = Intcode.parseOpcode(1);
 
         assertAll(
@@ -89,7 +89,7 @@ DE - two-digit opcode,      02 == opcode 2
     }
 
     @Test
-    void name1() {
+    void parse_opcode_with_first_param_in_immediate_mode() {
         Opcode opcode = Intcode.parseOpcode(101);
 
         assertAll(
@@ -101,7 +101,7 @@ DE - two-digit opcode,      02 == opcode 2
     }
 
     @Test
-    void name2() {
+    void parse_opcode_with_second_param_in_immediate() {
         Opcode opcode = Intcode.parseOpcode(1001);
 
         assertAll(
@@ -129,5 +129,196 @@ DE - two-digit opcode,      02 == opcode 2
         Integer[] memory = Intcode.intcode(Intcode.parseIntcodeInput(input), 0, output);
 
         assertEquals(3306701, memory[0]);
+    }
+
+    @Test
+    void golden_master_2() {
+        String input = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
+                       "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
+                       "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
+
+        Integer[] memory = Intcode.intcode(Intcode.parseIntcodeInput(input), 1, output);
+
+        assertEquals(999, output.getValue());
+    }
+
+    @Test
+    void golden_master_3() {
+        String input = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
+                       "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
+                       "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
+
+        Integer[] memory = Intcode.intcode(Intcode.parseIntcodeInput(input), 8, output);
+
+        assertEquals(1000, output.getValue());
+    }
+
+    @Test
+    void golden_master_4() {
+        String input = "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
+                       "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
+                       "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99";
+
+        Integer[] memory = Intcode.intcode(Intcode.parseIntcodeInput(input), 9, output);
+
+        assertEquals(1001, output.getValue());
+    }
+
+    @Test
+    void opcode_5_instruction() {
+// Opcode 5 is jump-if-true:
+// if the first parameter is non-zero,
+//     it sets the instruction pointer to the value from the second parameter.
+//     Otherwise, it does nothing.
+
+        Integer[] mem = new Integer[]{5, 0, 1};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        assertEquals(0, Intcode.executeJumpIfTrue(mem, pointer, opcode));
+    }
+
+    @Test
+    void opcode_5_instruction_2() {
+// Opcode 5 is jump-if-true:
+// if the first parameter is non-zero,
+//     it sets the instruction pointer to the value from the second parameter.
+//     Otherwise, it does nothing.
+
+        Integer[] mem = new Integer[]{5, 0, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        assertEquals(5, Intcode.executeJumpIfTrue(mem, pointer, opcode));
+    }
+
+    @Test
+    void opcode_5_instruction_otherwise() {
+
+        Integer[] mem = new Integer[]{5, 2, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        assertEquals(3, Intcode.executeJumpIfTrue(mem, pointer, opcode));
+    }
+
+    // Opcode 6 is jump-if-false:
+    // if the first parameter is zero,
+    //     it sets the instruction pointer to the value from the second parameter.
+    //     Otherwise, it does nothing.
+
+    @Test
+    void opcode_6_instruction() {
+        // ARRANGE
+        Integer[] mem = new Integer[]{1106, 0, 1};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int actual = Intcode.executeJumpIfFalse(mem, pointer, opcode);
+
+        // ASSERT
+        assertEquals(1, actual);
+    }
+
+    @Test
+    void opcode_6_instruction_return_next_opcode_pos() {
+        Integer[] mem = new Integer[]{1106, 1, 1};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int actual = Intcode.executeJumpIfFalse(mem, pointer, opcode);
+
+        // ASSERT
+        assertEquals(3, actual);
+    }
+
+    @Test
+    void opcode_7_instruction_when_first_less_than_second_write_1_to_third() {
+        Integer[] mem = new Integer[]{1107, 0, 1, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int actual = Intcode.executeLessThan(mem, pointer, opcode);
+
+        // ASSERT
+        assertAll(
+            () -> assertEquals(1, mem[0], "calc result"),
+            () -> assertEquals(4, actual, "new position")
+        );
+    }
+
+    // Opcode 7 is less than:
+    // if the first parameter is less than the second parameter,
+    //     it stores 1 in the position given by the third parameter.
+    //     Otherwise, it stores 0.
+    @Test
+    void opcode_7_instruction_when_first_equal_than_second_write_0_to_third() {
+        Integer[] mem = new Integer[]{1107, 1, 1, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int actual = Intcode.executeLessThan(mem, pointer, opcode);
+
+        // ASSERT
+        assertAll(
+            () -> assertEquals(0, mem[0], "calc result"),
+            () -> assertEquals(4, actual, "new position")
+        );
+    }
+
+    @Test
+    void opcode_7_instruction_when_first_greater_than_second_write_0_to_third() {
+        Integer[] mem = new Integer[]{1107, 1, 0, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int actual = Intcode.executeLessThan(mem, pointer, opcode);
+
+        // ASSERT
+        assertAll(
+            () -> assertEquals(0, mem[0], "calc result"),
+            () -> assertEquals(4, actual, "new position")
+        );
+    }
+
+    // Opcode 8 is equals:
+    // if the first parameter is equal to the second parameter,
+    //   it stores 1 in the position given by the third parameter.
+    //   Otherwise, it stores 0.
+    @Test
+    void opcode_8_instruction_when_first_equal_to_second_write_1_to_third() {
+        Integer[] mem = new Integer[]{1108, 1, 1, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int newPosition = Intcode.executeEqualTo(mem, pointer, opcode);
+
+        // ASSERT
+        assertAll(
+            () -> assertEquals(1, mem[0], "calc result"),
+            () -> assertEquals(4, newPosition, "new position")
+        );
+    }
+
+    @Test
+    void opcode_8_instruction_when_first_not_equal_to_second_write_0_to_third() {
+        Integer[] mem = new Integer[]{1108, 1, 5, 0};
+        int pointer = 0;
+        Opcode opcode = Intcode.parseOpcode(mem[0]);
+
+        // ACT
+        int newPosition = Intcode.executeEqualTo(mem, pointer, opcode);
+
+        // ASSERT
+        assertAll(
+            () -> assertEquals(0, mem[0], "calc result"),
+            () -> assertEquals(4, newPosition, "new position")
+        );
     }
 }

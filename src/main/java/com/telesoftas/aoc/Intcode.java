@@ -12,7 +12,7 @@ public class Intcode {
 
         Integer[] inputs = parseIntcodeInput(input);
 
-        Integer[] memory = intcode(inputs, 1, output);
+        Integer[] memory = intcode(inputs, 5, output);
 
         System.out.println(output.getValue());
     }
@@ -27,38 +27,112 @@ public class Intcode {
 
     public static Integer[] intcode(final Integer[] mem, final int input, final Output output) {
         label:
-        for (int i = 0; i < mem.length; ) {
+        for (int pointer = 0; pointer < mem.length; ) {
 
-            Opcode opcode = parseOpcode(mem[i]);
+            Opcode opcode = parseOpcode(mem[pointer]);
 
             switch (opcode.getOperation()) {
                 case 1:  // addition
-                    mem[mem[i + 3]] = take(mem, mem[i + 1], opcode.getModeFirst())
-                                      + take(mem, mem[i + 2], opcode.getModeSecond());
-                    i += 4;
+                    mem[mem[pointer + 3]] = take(mem, mem[pointer + 1], opcode.getModeFirst())
+                                            + take(mem, mem[pointer + 2], opcode.getModeSecond());
+                    pointer += 4;
                     break;
                 case 2:  // multiplication
-                    mem[mem[i + 3]] = take(mem, mem[i + 1], opcode.getModeFirst()) * take(
-                        mem,
-                        mem[i + 2],
-                        opcode.getModeSecond()
-                    );
-                    i += 4;
+                    mem[mem[pointer + 3]] = take(mem, mem[pointer + 1], opcode.getModeFirst())
+                                            * take(mem, mem[pointer + 2], opcode.getModeSecond());
+                    pointer += 4;
                     break;
                 case 3:  // input
-                    mem[mem[i + 1]] = input;
-                    i += 2;
+                    mem[mem[pointer + 1]] = input;
+                    pointer += 2;
                     break;
                 case 4:  // output
-                    output.write(take(mem, mem[i + 1], opcode.getModeFirst()));
-                    i += 2;
+                    output.write(take(mem, mem[pointer + 1], opcode.getModeFirst()));
+                    pointer += 2;
+                    break;
+                case 5: // jump if true
+                    pointer = executeJumpIfTrue(mem, pointer, opcode);
+                    break;
+                case 6:
+                    pointer = executeJumpIfFalse(mem, pointer, opcode);
+                    break;
+                case 7:
+                    pointer = executeLessThan(mem, pointer, opcode);
+                    break;
+                case 8:
+                    pointer = executeEqualTo(mem, pointer, opcode);
                     break;
                 case 99:  // halt
                     break label;
+
+                default:
+                    throw new RuntimeException(String.format("unhandled opcode %s", opcode.opration));
             }
         }
 
         return mem;
+    }
+
+    public static int executeJumpIfTrue(final Integer[] mem, final int pointer, final Opcode opcode) {
+        Integer firstParam = take(mem, mem[pointer + 1], opcode.getModeFirst());
+        Integer secondParam = take(mem, mem[pointer + 2], opcode.getModeSecond());
+
+        if (firstParam != 0) {
+            return secondParam;
+        }
+
+        return pointer + 3; // new pointer
+    }
+
+    public static int executeJumpIfFalse(
+        final Integer[] mem,
+        final int pointer,
+        final Opcode opcode
+    ) {
+        Integer firstParam = take(mem, mem[pointer + 1], opcode.getModeFirst());
+        Integer secondParam = take(mem, mem[pointer + 2], opcode.getModeSecond());
+
+        if (firstParam == 0) {
+            return secondParam;
+        }
+
+        return pointer + 3;
+    }
+
+    // Opcode 7 is less than:
+    // if the first parameter is less than the second parameter,
+    //     it stores 1 in the position given by the third parameter.
+    //     Otherwise, it stores 0.
+    public static int executeLessThan(final Integer[] mem, final int pointer, final Opcode opcode) {
+        Integer firstParam = take(mem, mem[pointer + 1], opcode.getModeFirst());
+        Integer secondParam = take(mem, mem[pointer + 2], opcode.getModeSecond());
+        Integer thirdParam = mem[pointer + 3];
+
+        if (firstParam < secondParam) {
+            mem[thirdParam] = 1;
+        } else {
+            mem[thirdParam] = 0;
+        }
+
+        return pointer + 4;
+    }
+
+    // Opcode 8 is equals:
+    // if the first parameter is equal to the second parameter,
+    //   it stores 1 in the position given by the third parameter.
+    //   Otherwise, it stores 0.
+    public static int executeEqualTo(final Integer[] mem, final int pointer, final Opcode opcode) {
+        int firstParam = take(mem, mem[pointer + 1], opcode.getModeFirst());
+        int secondParam = take(mem, mem[pointer + 2], opcode.getModeSecond());
+        Integer thirdParam = mem[pointer + 3];
+
+        if (firstParam == secondParam) {
+            mem[thirdParam] = 1;
+        } else {
+            mem[thirdParam] = 0;
+        }
+
+        return pointer + 4;
     }
 
     private static Integer take(final Integer[] mem, final Integer value, final int mode) {
