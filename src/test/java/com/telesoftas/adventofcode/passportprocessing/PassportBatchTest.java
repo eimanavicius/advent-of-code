@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PassportBatchTest {
@@ -36,6 +37,22 @@ class PassportBatchTest {
         Map<String, String> fields = PassportsBatch.stringToMap(passport);
 
         assertEquals("candy", fields.get("key"));
+    }
+
+    @Test
+    void maps_fields_correctly() {
+        Passport passport = PassportsBatch.mapToPassport(PassportFixture.VALID_VALUES);
+
+        assertAll(
+            () -> assertEquals(1937, passport.getBirthYear()),
+            () -> assertEquals(2017, passport.getIssueYear()),
+            () -> assertEquals(2020, passport.getExpirationYear()),
+            () -> assertEquals(183, passport.getHeightInCm()),
+            () -> assertEquals("#fffffd", passport.getHairColor()),
+            () -> assertEquals("gry", passport.getEyeColor()),
+            () -> assertEquals("860033327", passport.getPassportId()),
+            () -> assertEquals("147", passport.getCountryId())
+        );
     }
 
     @Test
