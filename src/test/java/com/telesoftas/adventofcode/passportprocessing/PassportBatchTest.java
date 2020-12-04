@@ -12,7 +12,7 @@ import java.util.Map;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class PassportProcessingTest {
+class PassportBatchTest {
 
     @ParameterizedTest
     @ValueSource(strings = {
