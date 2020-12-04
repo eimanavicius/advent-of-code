@@ -7,10 +7,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PasswordPhilosophyTest {
@@ -28,6 +31,25 @@ class PasswordPhilosophyTest {
                 ),
                 password
             )
+        );
+    }
+
+    @Test
+    void build_SelfValidatingPassword_with_custom_predicate() {
+        Predicate<byte[]> predicate = bytes -> false;
+        AtomicBoolean factoryCalled = new AtomicBoolean(false);
+
+        var maybePassword = PasswordPhilosophy.stringToSelfValidatingPassword(
+            "1-3 a: abcde",
+            (letter, one, two) -> {
+                factoryCalled.set(true);
+                return predicate;
+            }
+        );
+
+        assertTrue(factoryCalled.get());
+        maybePassword.ifPresent(
+            password -> assertSame(predicate, password.getPredicate())
         );
     }
 

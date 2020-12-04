@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.io.InputStream;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -19,6 +20,13 @@ public class PasswordPhilosophy {
     private static final Pattern PATTERN = Pattern.compile("(?<min>\\d+)-(?<max>\\d+) (?<char>\\w): (?<pswd>.*)");
 
     public static Optional<SelfValidatingPassword> stringToSelfValidatingPassword(String line) {
+        return stringToSelfValidatingPassword(line, CharCountPredicate::new);
+    }
+
+    public static Optional<SelfValidatingPassword> stringToSelfValidatingPassword(
+        String line,
+        PredicateFactory factory
+    ) {
         Matcher matcher = PATTERN.matcher(line);
 
         if (!matcher.matches()) {
@@ -27,7 +35,7 @@ public class PasswordPhilosophy {
 
         return of(new SelfValidatingPassword(
             new Password(matcher.group("pswd").getBytes()),
-            new CharCountPredicate(
+            factory.create(
                 matcher.group("char").charAt(0),
                 parseInt(matcher.group("min")),
                 parseInt(matcher.group("max"))
@@ -39,5 +47,10 @@ public class PasswordPhilosophy {
         return new Scanner(batch)
             .useDelimiter("\n")
             .tokens();
+    }
+
+    public interface PredicateFactory {
+
+        Predicate<byte[]> create(char letter, int one, int two);
     }
 }

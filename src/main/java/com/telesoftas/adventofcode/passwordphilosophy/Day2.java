@@ -12,7 +12,7 @@ public class Day2 {
         InputStream input = ClassLoader.getSystemResourceAsStream("day2.txt");
 
         long count = PasswordPhilosophy.toPasswordWithPolicyAsStringStream(input)
-            .map(PasswordPhilosophy::stringToSelfValidatingPassword)
+            .map(line -> PasswordPhilosophy.stringToSelfValidatingPassword(line, ExactlyOnePositionPredicate::new))
             .flatMap(Optional::stream)
             .filter(SelfValidatingPassword::isValid)
             .count();
