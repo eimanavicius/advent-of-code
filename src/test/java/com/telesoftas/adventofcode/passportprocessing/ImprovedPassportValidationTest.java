@@ -1,68 +1,103 @@
 package com.telesoftas.adventofcode.passportprocessing;
 
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.util.Map;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ImprovedPassportValidationTest {
 
-    private Validator validator;
+
+    public static final String[] OPTIONAL = {
+        // (Country ID)
+        "cid",
+    };
+    public static final String[] REQUIRED = {
+        // (Birth Year)
+        "byr",
+        // (Issue Year)
+        "iyr",
+        // (Expiration Year)
+        "eyr",
+        // (Height)
+        "hgt",
+        // (Hair Color)
+        "hcl",
+        // (Eye Color)
+        "ecl",
+        // (Passport ID)
+        "pid",
+    };
+    private PassportValidator validator;
 
     @BeforeEach
     void setUp() {
-        ValidatorFactory factory = Validation.byDefaultProvider().configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory();
-        validator = factory.getValidator();
+        validator = new PassportValidator();
+    }
+
+
+    @Test
+    void valid_passport_sample_with_optional_fields() {
+        Passport passport = PassportFixture.make();
+
+        assertTrue(validator.isValid(passport));
+    }
+
+    @Test
+    void valid_passport_sample_without_optional_fields() {
+        Passport passport = PassportFixture.makeWithoutFields(OPTIONAL);
+
+        assertTrue(validator.isValid(passport));
+    }
+
+    @Test
+    void invalid_passport_sample_without_req_fields() {
+        Passport passport = PassportFixture.makeWithoutFields(REQUIRED);
+
+        assertFalse(validator.isValid(passport));
     }
 
     @ParameterizedTest
     @CsvSource({
-        "byr,2000,birthYear",
-        "iyr,2010,issueYear",
-        "eyr,2020,expirationYear",
-        "hgt,150cm,heightInCm",
-        "hgt,193cm,heightInCm",
-        "hgt,59in,heightInCm",
-        "hgt,76in,heightInCm",
-        "hcl,#aabbcc,hairColor",
-        "ecl,amb,eyeColor",
-        "pid,012345678,passportId",
-        "pid,000000001,passportId",
+        "byr,2000",
+        "iyr,2010",
+        "eyr,2020",
+        "hgt,150cm",
+        "hgt,193cm",
+        "hgt,59in",
+        "hgt,76in",
+        "hcl,#aabbcc",
+        "ecl,amb",
+        "pid,012345678",
+        "pid,000000001",
     })
-    void valid(String key, String value, String field) {
-        Passport passport = new Passport(Map.of(key, value));
+    void valid(String key, String value) {
+        Passport passport = PassportFixture.makeWithField(key, value);
 
-        assertTrue(validator.validateProperty(passport, field).isEmpty());
+        assertTrue(validator.isValid(passport));
     }
 
     @ParameterizedTest
     @CsvSource({
-        "byr,1410,birthYear",
-        "iyr,1410,issueYear",
-        "eyr,1410,expirationYear",
-        "hgt,149cm,heightInCm",
-        "hgt,194cm,heightInCm",
-        "hgt,58in,heightInCm",
-        "hgt,77in,heightInCm",
-        "hcl,#aaa,hairColor",
-        "ecl,blue,eyeColor",
-        "pid,123456,passportId",
-        "pid,0123456789,passportId",
-        "pid,#b6652a,passportId",
+        "byr,1410",
+        "iyr,1410",
+        "eyr,1410",
+        "hgt,149cm",
+        "hgt,194cm",
+        "hgt,58in",
+        "hgt,77in",
+        "hcl,#aaa",
+        "ecl,blue",
+        "pid,123456",
+        "pid,0123456789",
+        "pid,#b6652a",
     })
-    void invalid(String key, String value, String field) {
-        Passport passport = new Passport(Map.of(key, value));
+    void invalid(String key, String value) {
+        Passport passport = PassportFixture.makeWithField(key, value);
 
-        assertFalse(validator.validateProperty(passport, field).isEmpty());
+        assertFalse(validator.isValid(passport));
     }
 }

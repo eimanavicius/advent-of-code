@@ -1,29 +1,18 @@
 package com.telesoftas.adventofcode.passportprocessing;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PassportProcessingTest {
-
-    private PassportValidator validator;
-
-    @BeforeEach
-    void setUp() {
-        validator = new PassportValidator();
-    }
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -32,7 +21,7 @@ class PassportProcessingTest {
         "key1:value1\nkey:coin"
     })
     void read_coin_passport_fields(String passport) {
-        Passport fields = Passport.fromString(passport);
+        Map<String, String> fields = PassportsBatch.stringToMap(passport);
 
         assertEquals("coin", fields.get("key"));
     }
@@ -44,30 +33,9 @@ class PassportProcessingTest {
         "key1:value1\nkey:candy"
     })
     void read_candy_passport_fields(String passport) {
-        Passport fields = Passport.fromString(passport);
+        Map<String, String> fields = PassportsBatch.stringToMap(passport);
 
         assertEquals("candy", fields.get("key"));
-    }
-
-    @Test
-    void valid_passport_sample_with_optional_fields() {
-        Passport passport = makePassportFixture();
-
-        assertTrue(validator.isValid(passport));
-    }
-
-    @Test
-    void valid_passport_sample_without_optional_fields() {
-        Passport passport = makePassportFixtureWithoutFields(Passport.OPTIONAL);
-
-        assertTrue(validator.isValid(passport));
-    }
-
-    @Test
-    void invalid_passport_sample_without_req_fields() {
-        Passport passport = makePassportFixtureWithoutFields(Passport.REQUIRED);
-
-        assertFalse(validator.isValid(passport));
     }
 
     @Test
@@ -84,26 +52,5 @@ class PassportProcessingTest {
             + "byr:1937 iyr:2017 cid:147 hgt:183cm", list.get(0));
         assertEquals("iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884\n"
             + "hcl:#cfa07d byr:1929", list.get(1));
-    }
-
-    private Passport makePassportFixture() {
-        return makePassportFixtureWithoutFields();
-    }
-
-    private Passport makePassportFixtureWithoutFields(String... fields) {
-        Map<String, String> values = new HashMap<>(Map.of(
-            "byr", "1937",
-            "iyr", "2017",
-            "eyr", "2020",
-            "hgt", "183cm",
-            "hcl", "#fffffd",
-            "ecl", "gry",
-            "pid", "860033327",
-            "cid", "147"
-        ));
-        for (String field : fields) {
-            values.remove(field);
-        }
-        return new Passport(values);
     }
 }
