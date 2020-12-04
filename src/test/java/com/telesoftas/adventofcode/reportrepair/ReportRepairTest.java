@@ -32,6 +32,16 @@ class ReportRepairTest {
     }
 
     @Test
+    void returns_3_multiplied_entries_that_sum_to_2020() {
+        assertAll(
+            () -> assertEquals(200000, ExpenseReport.find3(List.of(2000, 10, 10))),
+            () -> assertEquals(200000, ExpenseReport.find3(List.of(7, 2000, 10, 10))),
+            () -> assertEquals(200000, ExpenseReport.find3(List.of(7, 2000, 10, 30, 10))),
+            () -> assertEquals(200000, ExpenseReport.find3(List.of(7, 2000, 3, 10, 30, 10)))
+        );
+    }
+
+    @Test
     void collects_numbers_from_input_stream_to_integers_stream() {
         InputStream input = new ByteArrayInputStream("12\n23\n34".getBytes());
 

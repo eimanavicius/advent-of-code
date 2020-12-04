@@ -15,7 +15,7 @@ public class Day1 {
             InputStream input = ClassLoader.getSystemResourceAsStream("day1.txt");
 
             long count = ExpenseReport.toIntegersStream(input)
-                .collect(collectingAndThen(toList(), ExpenseReport::find2));
+                .collect(collectingAndThen(toList(), ExpenseReport::find3));
 
             log.info("Answer: {}", count);
         } catch (Exception e) {
