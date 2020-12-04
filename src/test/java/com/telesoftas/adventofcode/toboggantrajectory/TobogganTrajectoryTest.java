@@ -7,7 +7,7 @@ class TobogganTrajectoryTest {
 
     @Test
     void name() {
-        byte[] map = (""
+        TobogganMap map = new TobogganMap((""
             + "..##.......\n"
             + "#...#...#..\n"
             + ".#....#..#.\n"
@@ -19,9 +19,9 @@ class TobogganTrajectoryTest {
             + "#.##...#...\n"
             + "#...##....#\n"
             + ".#..#...#.#\n"
-        ).getBytes();
+        ).getBytes());
 
-        int trees = Day3.countEncounteredTrees(map);
+        int trees = map.countEncounteredTrees(new Slope(3, 1));
 
         Assertions.assertEquals(7, trees);
     }
