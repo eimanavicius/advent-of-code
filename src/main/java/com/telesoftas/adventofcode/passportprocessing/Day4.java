@@ -10,10 +10,12 @@ public class Day4 {
     public static void main(String[] args) {
         InputStream input = ClassLoader.getSystemResourceAsStream("day4.txt");
 
+        PassportValidator validator = new PassportValidator();
+
         long count = PassportsBatch.toPassportStream(input)
-            .filter(Passport::isValid)
+            .filter(validator::isValid)
             .count();
 
-        log.info("Answer: {}", count); //
+        log.info("Answer: {}", count);
     }
 }

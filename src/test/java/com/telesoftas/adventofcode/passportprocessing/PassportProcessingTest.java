@@ -1,5 +1,6 @@
 package com.telesoftas.adventofcode.passportprocessing;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -16,6 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PassportProcessingTest {
+
+    private PassportValidator validator;
+
+    @BeforeEach
+    void setUp() {
+        validator = new PassportValidator();
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {
@@ -45,42 +53,21 @@ class PassportProcessingTest {
     void valid_passport_sample_with_optional_fields() {
         Passport passport = makePassportFixture();
 
-        assertTrue(passport.isValid());
-    }
-
-    private Passport makePassportFixture() {
-        return makePassportFixtureWithoutFields();
-    }
-
-    private Passport makePassportFixtureWithoutFields(String... fields) {
-        Map<String, String> values = new HashMap<>(Map.of(
-            "byr", "abc",
-            "iyr", "abc",
-            "eyr", "abc",
-            "hgt", "abc",
-            "hcl", "abc",
-            "ecl", "abc",
-            "pid", "abc",
-            "cid", "abc"
-        ));
-        for (String field : fields) {
-            values.remove(field);
-        }
-        return new Passport(values);
+        assertTrue(validator.isValid(passport));
     }
 
     @Test
     void valid_passport_sample_without_optional_fields() {
         Passport passport = makePassportFixtureWithoutFields(Passport.OPTIONAL);
 
-        assertTrue(passport.isValid());
+        assertTrue(validator.isValid(passport));
     }
 
     @Test
     void invalid_passport_sample_without_req_fields() {
         Passport passport = makePassportFixtureWithoutFields(Passport.REQUIRED);
 
-        assertFalse(passport.isValid());
+        assertFalse(validator.isValid(passport));
     }
 
     @Test
@@ -99,4 +86,24 @@ class PassportProcessingTest {
             + "hcl:#cfa07d byr:1929", list.get(1));
     }
 
+    private Passport makePassportFixture() {
+        return makePassportFixtureWithoutFields();
+    }
+
+    private Passport makePassportFixtureWithoutFields(String... fields) {
+        Map<String, String> values = new HashMap<>(Map.of(
+            "byr", "1937",
+            "iyr", "2017",
+            "eyr", "2020",
+            "hgt", "183cm",
+            "hcl", "#fffffd",
+            "ecl", "gry",
+            "pid", "860033327",
+            "cid", "147"
+        ));
+        for (String field : fields) {
+            values.remove(field);
+        }
+        return new Passport(values);
+    }
 }
