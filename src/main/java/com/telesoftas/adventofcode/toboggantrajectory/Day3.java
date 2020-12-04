@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Log4j2
 public class Day3 {
@@ -12,18 +13,41 @@ public class Day3 {
         try (InputStream stream = ClassLoader.getSystemResourceAsStream("day3.txt")) {
             byte[] map = stream.readAllBytes();
 
-            int trees = countEncounteredTrees(map);
+            long trees = multipliedTreesOnAllSlopes(map);
 
             log.info("Answer: {}", trees);
         }
     }
 
+    private static long multipliedTreesOnAllSlopes(byte[] map) {
+        List<Slope> slopes = List.of(
+            new Slope(1, 1),
+            new Slope(3, 1),
+            new Slope(5, 1),
+            new Slope(7, 1),
+            new Slope(1, 2)
+        );
+        long trees = 1;
+        for (Slope slope : slopes) {
+            trees *= countEncounteredTrees(map, slope);
+        }
+        return trees;
+    }
+
     static int countEncounteredTrees(byte[] map) {
+        return countEncounteredTrees(map, 3, 1);
+    }
+
+    static int countEncounteredTrees(byte[] map, Slope slope) {
+        return countEncounteredTrees(map, slope.getRight(), slope.getDown());
+    }
+
+    static int countEncounteredTrees(byte[] map, int right, int down) {
         int width = widthOfMap(map);
         int height = heightOfMap(map, width);
 
         int trees = 0;
-        for (int x = 3, y = 1; y < height; x = (x + 3) % width, y += 1) {
+        for (int x = right, y = down; y < height; x = (x + right) % width, y += down) {
             int nextPosition = y * (width + 1) + x;
             if ('#' == map[nextPosition]) {
                 trees++;
