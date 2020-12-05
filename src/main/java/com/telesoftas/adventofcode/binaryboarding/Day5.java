@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Scanner;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 @Log4j2
@@ -14,7 +15,7 @@ public class Day5 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day5.txt")) {
-            List<Integer> sorted = new Scanner(input)
+            List<Integer> sorted = new Scanner(requireNonNull(input))
                 .useDelimiter("\n")
                 .tokens()
                 .map(Day5::binarySpacePartitioning)

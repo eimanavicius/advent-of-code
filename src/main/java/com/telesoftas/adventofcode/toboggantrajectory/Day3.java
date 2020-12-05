@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @Log4j2
 public class Day3 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream stream = ClassLoader.getSystemResourceAsStream("day3.txt")) {
-            TobogganMap map = new TobogganMap(stream.readAllBytes());
+            TobogganMap map = new TobogganMap(requireNonNull(stream).readAllBytes());
 
             long trees = map.multipliedTreesOnAllSlopes(List.of(
                 new Slope(1, 1),
