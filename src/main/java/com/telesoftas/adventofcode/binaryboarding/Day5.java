@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
@@ -15,9 +16,7 @@ public class Day5 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day5.txt")) {
-            List<Integer> sorted = new Scanner(requireNonNull(input))
-                .useDelimiter("\n")
-                .tokens()
+            List<Integer> sorted = readBoardingPassesAsString(requireNonNull(input))
                 .map(Day5::binarySpacePartitioning)
                 .sorted(Integer::compareTo)
                 .collect(toList());
@@ -32,6 +31,12 @@ public class Day5 {
 
             log.error("All seats taken");
         }
+    }
+
+    private static Stream<String> readBoardingPassesAsString(InputStream input) {
+        return new Scanner(input)
+            .useDelimiter("\n")
+            .tokens();
     }
 
     private static int binarySpacePartitioning(String input) {
