@@ -4,21 +4,32 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
+import java.util.List;
 import java.util.Scanner;
+
+import static java.util.stream.Collectors.toList;
 
 @Log4j2
 public class Day5 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day5.txt")) {
-            Optional<Integer> max = new Scanner(input)
+            List<Integer> sorted = new Scanner(input)
                 .useDelimiter("\n")
                 .tokens()
                 .map(Day5::binarySpacePartitioning)
-                .max(Integer::compareTo);
+                .sorted(Integer::compareTo)
+                .collect(toList());
 
-            log.info("Answer: {}", max);
+            for (int i = 0; i < sorted.size() - 1; i++) {
+                if (sorted.get(i) - sorted.get(i + 1) < -1) {
+                    int missingSeatId = sorted.get(i + 1) - 1;
+                    log.info("Answer: {}", missingSeatId);
+                    return;
+                }
+            }
+
+            log.error("All seats taken");
         }
     }
 
@@ -49,7 +60,6 @@ public class Day5 {
                     break;
             }
         }
-
         return lower * 8 + right;
     }
 }
