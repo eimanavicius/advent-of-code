@@ -2,39 +2,29 @@ package com.telesoftas.adventofcode.binaryboarding;
 
 import lombok.Value;
 
+import static java.util.Arrays.copyOfRange;
+
 @Value
 public class BoardingPass {
 
     byte[] directions;
 
     public Seat findSeat() {
-        byte[] bytes = directions;
+        return new Seat(
+            findRow(copyOfRange(directions, 0, 7)),
+            findColumn(copyOfRange(directions, 7, 10))
+        );
+    }
 
-        int lower = 0, upper = 127;
+    private int findRow(byte[] directions) {
+        return new Range(0, 127)
+            .partition(directions)
+            .getLower();
+    }
 
-        for (int i = 0; i < 7; i++) {
-            switch (bytes[i]) {
-                case 'F':
-                    upper -= (1 + upper - lower) / 2;
-                    break;
-                case 'B':
-                    lower += (1 + upper - lower) / 2;
-                    break;
-            }
-        }
-
-        int left = 0, right = 7;
-        for (int i = 7; i < 10; i++) {
-            switch (bytes[i]) {
-                case 'R':
-                    left -= (left - right - 1) / 2;
-                    break;
-                case 'L':
-                    right += (left - right - 1) / 2;
-                    break;
-            }
-        }
-
-        return new Seat(lower * 8 + right);
+    private int findColumn(byte[] directions) {
+        return new Range(0, 7)
+            .partition(directions)
+            .getUpper();
     }
 }

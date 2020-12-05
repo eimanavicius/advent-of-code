@@ -7,6 +7,14 @@ public class Seat {
 
     int id;
 
+    public Seat(int id) {
+        this.id = id;
+    }
+
+    public Seat(int row, int column) {
+        this(row * 8 + column);
+    }
+
     public int distanceTo(Seat seat) {
         return Math.abs(id - seat.id);
     }
