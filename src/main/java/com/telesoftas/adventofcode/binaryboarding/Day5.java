@@ -4,6 +4,8 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -22,21 +24,23 @@ public class Day5 {
             readBoardingPasses(requireNonNull(input))
                 .map(BoardingPass::findSeat)
                 .sorted(comparingInt(Seat::getId))
-                .collect(collectingAndThen(toList(), sorted -> {
-                    for (int i = 0; i < sorted.size() - 1; i++) {
-                        Seat seat = sorted.get(i);
-                        Seat next = sorted.get(i + 1);
-                        if (seat.distanceTo(next) > 1) {
-                            return of(seat.findBetween(next));
-                        }
-                    }
-                    return empty();
-                }))
+                .collect(collectingAndThen(toList(), Day5::findMissingSeat))
                 .ifPresentOrElse(
-                    seat -> log.info("Answer: {}", ((Seat) seat).getId()),
+                    seat -> log.info("Answer: {}", seat.getId()),
                     () -> log.error("All seats taken")
                 );
         }
+    }
+
+    public static Optional<Seat> findMissingSeat(List<Seat> sorted) {
+        for (int i = 0; i < sorted.size() - 1; i++) {
+            Seat seat = sorted.get(i);
+            Seat next = sorted.get(i + 1);
+            if (seat.distanceTo(next) > 1) {
+                return of(seat.findBetween(next));
+            }
+        }
+        return empty();
     }
 
     private static Stream<BoardingPass> readBoardingPasses(InputStream input) {
