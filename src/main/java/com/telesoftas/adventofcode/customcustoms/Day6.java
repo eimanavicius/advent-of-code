@@ -4,11 +4,14 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.Scanner;
-import java.util.stream.IntStream;
+import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toSet;
 
 @Log4j2
 public class Day6 {
@@ -18,7 +21,7 @@ public class Day6 {
 
             long sum = toDeclarationsAsStringStream(requireNonNull(input))
                 .map(Day6::stringToYesStream)
-                .mapToLong(IntStream::count)
+                .mapToLong(Set::size)
                 .sum();
 
             log.info("Answer: {}", sum);
@@ -26,10 +29,15 @@ public class Day6 {
         }
     }
 
-    public static IntStream stringToYesStream(String groupDeclaration) {
-        return groupDeclaration.chars()
-            .filter(symbol -> '\n' != symbol)
-            .distinct();
+    public static Set<Integer> stringToYesStream(String groupDeclaration) {
+        return stream(groupDeclaration.split("\\s"))
+            .map(person -> person.chars().boxed().collect(toSet()))
+            .reduce((everyoneYeses, next) -> {
+                HashSet<Integer> result = new HashSet<>(everyoneYeses);
+                result.retainAll(next);
+                return result;
+            })
+            .orElse(Set.of());
     }
 
     public static Stream<String> toDeclarationsAsStringStream(InputStream batch) {
