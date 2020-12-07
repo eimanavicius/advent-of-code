@@ -6,18 +6,18 @@ import lombok.Value;
 import java.util.Set;
 
 @Value
-@EqualsAndHashCode(of = {"bagColor"})
+@EqualsAndHashCode(of = {"bag"})
 public class BagRule {
 
-    String bagColor;
-    Set<String> innerBagsColors;
+    Bag bag;
+    Set<Bag> innerBags;
 
-    public BagRule(String bagColor, Set<String> innerBagsColors) {
-        this.bagColor = bagColor;
-        this.innerBagsColors = innerBagsColors;
+    public BagRule(Bag bag, Set<Bag> innerBags) {
+        this.bag = bag;
+        this.innerBags = innerBags;
     }
 
-    public boolean canContain(String bagColor) {
-       return innerBagsColors.contains(bagColor);
+    public boolean canContain(Bag bagColor) {
+       return innerBags.contains(bagColor);
     }
 }
