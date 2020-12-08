@@ -4,17 +4,18 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.lang.Integer.parseInt;
+import static java.util.function.UnaryOperator.identity;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Stream.iterate;
 
 @Log4j2
 public class Day7 {
@@ -23,19 +24,15 @@ public class Day7 {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day7.txt")) {
             Pattern pattern = Pattern.compile("(?<amount>\\d+) (?<color>.*?) bags?");
             var rulesByColor = toStringStream(input)
-                .map(s -> {
-                    String[] parts = s.split(" bags contain ");
-                    var allowed = parts[1].split(", ");
-
-                    Set<Bag> colors = Arrays.stream(allowed)
-                        .map(pattern::matcher)
-                        .filter(Matcher::matches)
+                .map(s -> s.split(" bags contain "))
+                .map(parts -> {
+                    final Bag bag = new Bag(parts[0]);
+                    final Set<Bag> innerBags = iterate(pattern.matcher(parts[1]), Matcher::find, identity())
                         .map(matcher -> new Bag(matcher.group("color"), parseInt(matcher.group("amount"))))
-                        .collect(Collectors.toSet());
-
-                    return new BagRule(new Bag(parts[0]), colors);
+                        .collect(toSet());
+                    return new BagRule(bag, innerBags);
                 })
-                .collect(Collectors.toMap(BagRule::getBag, Function.identity()));
+                .collect(toMap(BagRule::getBag, identity()));
 
             // How many bag colors can eventually contain at least one shiny gold bag?
             var answer = rulesByColor.values().stream()
