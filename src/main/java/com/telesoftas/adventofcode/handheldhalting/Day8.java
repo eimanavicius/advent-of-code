@@ -29,7 +29,7 @@ public class Day8 {
 
             Set<Integer> prev = new HashSet<>();
 
-            int sum;
+            Integer sum;
             try {
                 sum = runProgram(instructions, prev);
             } catch (LoopException e) {
@@ -40,7 +40,7 @@ public class Day8 {
         }
     }
 
-    private static int tryRemoveInfiniteLoop(List<Intructution> instructions, Set<Integer> prev) {
+    private static Integer tryRemoveInfiniteLoop(List<Intructution> instructions, Set<Integer> prev) {
         for (int i = prev.size() - 1; i >= 0; i--) {
             final Intructution instr = instructions.get(i);
             if ("jmp".equals(instr.getCommand())) {
@@ -61,7 +61,7 @@ public class Day8 {
                 }
             }
         }
-        return -1;
+        return null;
     }
 
     private static int runProgram(List<Intructution> instructions) throws LoopException {
