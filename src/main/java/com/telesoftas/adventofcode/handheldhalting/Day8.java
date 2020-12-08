@@ -39,12 +39,12 @@ public class Day8 {
         }
     }
 
-    private static Integer tryRemoveInfiniteLoop(List<Intructution> instructions, Set<Integer> prev) {
-        for (int i = prev.size() - 1; i >= 0; i--) {
-            final Intructution instr = instructions.get(i);
+    private static Integer tryRemoveInfiniteLoop(List<Intructution> instructions, Set<Integer> previousPositions) {
+        for (int position : previousPositions) {
+            final Intructution instr = instructions.get(position);
             if ("jmp".equals(instr.getCommand())) {
                 final ArrayList<Intructution> update = new ArrayList<>(instructions);
-                update.set(i, instr.withCommand("nop"));
+                update.set(position, instr.withCommand("nop"));
                 try {
                     return runProgram(update);
                 } catch (LoopException loopException) {
@@ -52,7 +52,7 @@ public class Day8 {
                 }
             } else if ("nop".equals(instr.getCommand())) {
                 final ArrayList<Intructution> update = new ArrayList<>(instructions);
-                update.set(i, instr.withCommand("jmp"));
+                update.set(position, instr.withCommand("jmp"));
                 try {
                     return runProgram(update);
                 } catch (LoopException loopException) {
