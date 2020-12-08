@@ -10,9 +10,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static java.lang.Integer.parseInt;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 @Log4j2
 public class Day8 {
@@ -21,11 +22,9 @@ public class Day8 {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day8.txt")) {
             final List<Intructution> instructions = new BufferedReader(new InputStreamReader(requireNonNull(input)))
                 .lines()
-                .map(s -> {
-                    final String[] parts = s.split(" ");
-                    return new Intructution(parts[0], Integer.parseInt(parts[1]));
-                })
-                .collect(Collectors.toList());
+                .map(s -> s.split(" "))
+                .map(parts -> new Intructution(parts[0], parseInt(parts[1])))
+                .collect(toList());
 
             Set<Integer> prev = new HashSet<>();
 
