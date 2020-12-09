@@ -5,9 +5,7 @@ import lombok.experimental.UtilityClass;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
@@ -42,23 +40,23 @@ public class EncodingError {
         throw new EncryptionErrorNotFoundException();
     }
 
-    public static Set<Long> findEncryptionWeaknessRange(List<Long> sample, Long weakness) {
+    public static List<Long> findEncryptionWeaknessRange(List<Long> sample, Long weakness) {
         for (int i = 0; i < sample.size(); i++) {
             long sum = sample.get(i);
             for (int j = i + 1; j < sample.size(); j++) {
                 sum += sample.get(j);
                 if (sum == weakness) {
-                    return new HashSet<>(sample.subList(i, j + 1));
+                    return sample.subList(i, j + 1);
                 }
                 if (sum > weakness) {
                     break;
                 }
             }
         }
-        return Set.of();
+        return List.of();
     }
 
-    public static Long findEncryptionWeakness(Set<Long> weaknessRange) {
+    public static Long findEncryptionWeakness(List<Long> weaknessRange) {
         return weaknessRange.stream()
             .sorted()
             .collect(
