@@ -3,7 +3,6 @@ package com.telesoftas.adventofcode.encodingerror;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,20 +33,27 @@ class EncodingErrorTest {
     );
 
     @Test
-    void part1() {
+    void part1() throws Exception {
         final Long erroneous = Day9.findEncryptionError(SAMPLE, 5);
 
         assertEquals(127, erroneous);
     }
 
     @Test
-    void part2() {
+    void part2_1() {
         final Long erroneous = 127L;
 
-        Set<Long> range = Day9.findEncryptionWeakness(SAMPLE, erroneous);
-        final Optional<Long> min = range.stream().min(Long::compareTo);
-        final Optional<Long> max = range.stream().max(Long::compareTo);
+        Set<Long> range = Day9.findEncryptionWeaknessRange(SAMPLE, erroneous);
 
-        assertEquals(62, min.get() + max.get());
+        assertEquals(Set.of(15L, 25L, 47L, 40L), range);
+    }
+
+    @Test
+    void part2_2() {
+        final Set<Long> weaknessRange = Set.of(15L, 25L, 47L, 40L);
+
+        Long weakness = Day9.findEncryptionWeakness(weaknessRange);
+
+        assertEquals(62, weakness);
     }
 }

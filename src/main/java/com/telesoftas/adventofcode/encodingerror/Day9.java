@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
 @Log4j2
@@ -19,23 +19,28 @@ public class Day9 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day9.txt")) {
-            List<Long> numbers = new BufferedReader(new InputStreamReader(requireNonNull(input)))
-                .lines()
-                .map(Long::valueOf)
-                .collect(toList());
+            List<Long> numbers = toNumbersList(requireNonNull(input));
 
+            // What is the first number that does not have this property?
             Long erroneous = findEncryptionError(numbers, 25);
             log.info("Answer: {}", erroneous);
 
-            Set<Long> range = Day9.findEncryptionWeakness(numbers, erroneous);
-            final Optional<Long> min = range.stream().min(Long::compareTo);
-            final Optional<Long> max = range.stream().max(Long::compareTo);
-
-            log.info("Answer: {}", min.get() + max.get());
+            // What is the encryption weakness in your XMAS-encrypted list of numbers?
+            Long weakness = findEncryptionWeakness(findEncryptionWeaknessRange(numbers, erroneous));
+            log.info("Answer: {}", weakness);
+        } catch (EncryptionErrorNotFoundException e) {
+            log.error(e);
         }
     }
 
-    public static Long findEncryptionError(List<Long> numbers, int preamble) {
+    private static List<Long> toNumbersList(InputStream input) {
+        return new BufferedReader(new InputStreamReader(input))
+            .lines()
+            .map(Long::valueOf)
+            .collect(toList());
+    }
+
+    public static Long findEncryptionError(List<Long> numbers, int preamble) throws EncryptionErrorNotFoundException {
         for (int i = preamble; i < numbers.size(); i++) {
             Long next = numbers.get(i);
             boolean valid = false;
@@ -52,10 +57,10 @@ public class Day9 {
                 return next;
             }
         }
-        return null;
+        throw new EncryptionErrorNotFoundException();
     }
 
-    public static Set<Long> findEncryptionWeakness(List<Long> sample, Long weakness) {
+    public static Set<Long> findEncryptionWeaknessRange(List<Long> sample, Long weakness) {
         for (int i = 0; i < sample.size(); i++) {
             long sum = sample.get(i);
             for (int j = i + 1; j < sample.size(); j++) {
@@ -68,6 +73,22 @@ public class Day9 {
                 }
             }
         }
-        return null;
+        return Set.of();
+    }
+
+    public static Long findEncryptionWeakness(Set<Long> weaknessRange) {
+        return weaknessRange.stream()
+            .sorted()
+            .collect(
+                collectingAndThen(
+                    toList(),
+                    longs -> {
+                        if (longs.isEmpty()) {
+                            return null;
+                        }
+                        return longs.get(0) + longs.get(longs.size() - 1);
+                    }
+                )
+            );
     }
 }
