@@ -34,7 +34,7 @@ class EncodingErrorTest {
 
     @Test
     void part1() throws Exception {
-        final Long erroneous = Day9.findEncryptionError(SAMPLE, 5);
+        final Long erroneous = EncodingError.findEncryptionError(SAMPLE, 5);
 
         assertEquals(127, erroneous);
     }
@@ -43,7 +43,7 @@ class EncodingErrorTest {
     void part2_1() {
         final Long erroneous = 127L;
 
-        Set<Long> range = Day9.findEncryptionWeaknessRange(SAMPLE, erroneous);
+        Set<Long> range = EncodingError.findEncryptionWeaknessRange(SAMPLE, erroneous);
 
         assertEquals(Set.of(15L, 25L, 47L, 40L), range);
     }
@@ -52,7 +52,7 @@ class EncodingErrorTest {
     void part2_2() {
         final Set<Long> weaknessRange = Set.of(15L, 25L, 47L, 40L);
 
-        Long weakness = Day9.findEncryptionWeakness(weaknessRange);
+        Long weakness = EncodingError.findEncryptionWeakness(weaknessRange);
 
         assertEquals(62, weakness);
     }
