@@ -61,7 +61,7 @@ public class Day9 {
             for (int j = i + 1; j < sample.size(); j++) {
                 sum += sample.get(j);
                 if (sum == weakness) {
-                    return new HashSet<>(sample.subList(i, j));
+                    return new HashSet<>(sample.subList(i, j + 1));
                 }
                 if (sum > weakness) {
                     break;
