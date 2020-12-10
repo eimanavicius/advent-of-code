@@ -17,6 +17,6 @@ public class ExactlyOnePositionPredicate implements Predicate<byte[]> {
     public boolean test(byte[] value) {
         byte one = value[first - 1];
         byte two = value[second - 1];
-        return (one == letter || two == letter) && one != two;
+        return one == letter ^ two == letter;
     }
 }
