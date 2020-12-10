@@ -18,6 +18,11 @@ public class Day10 {
             // What is the number of 1-jolt differences multiplied by the number of 3-jolt differences?
             Long difference = AdapterArray.findJolt1and3DifferenceMultiplication(numbers);
             log.info("Answer: {}", difference);
+
+            // What is the total number of distinct ways you can arrange the adapters
+            // to connect the charging outlet to your device?
+            int combinations = AdapterArray.findAdapterArrangementCombinations(numbers);
+            log.info("Answer: {}", combinations);
         }
     }
 }

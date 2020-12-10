@@ -5,7 +5,9 @@ import lombok.experimental.UtilityClass;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,6 +31,22 @@ public class AdapterArray {
         }
 
         return sum1 * sum3;
+    }
+
+    static int findAdapterArrangementCombinations(List<Long> numbers) {
+        final List<Long> adapters = numbers.stream().sorted(Long::compareTo).collect(toList());
+
+        Map<Long, Integer> comb = new HashMap<>();
+        comb.put(0L, 1);
+
+        for (final Long adapter : adapters) {
+            final Integer combsWithPrev = comb.getOrDefault(adapter - 3L, 0)
+                + comb.getOrDefault(adapter - 2L, 0)
+                + comb.getOrDefault(adapter - 1L, 0);
+            comb.put(adapter, combsWithPrev);
+        }
+
+        return comb.getOrDefault(adapters.get(adapters.size() - 1), -1);
     }
 
     static List<Long> toNumbersList(InputStream input) {
