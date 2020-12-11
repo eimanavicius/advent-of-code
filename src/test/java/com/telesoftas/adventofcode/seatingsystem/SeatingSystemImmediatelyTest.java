@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Log4j2
-class SeatingSystemTest {
+class SeatingSystemImmediatelyTest {
 
     public static final byte[] STEP1 = (""
         + "L.LL.LL.LL\n"
@@ -32,6 +32,7 @@ class SeatingSystemTest {
         + "##########\n"
         + "#.######.#\n"
         + "#.#####.##\n").getBytes();
+
     public static final byte[] STEP3 = (""
         + "#.LL.L#.##\n"
         + "#LLLLLL.L#\n"
@@ -48,7 +49,7 @@ class SeatingSystemTest {
     void step1() {
         SeatingSystem system = new SeatingSystem(STEP1);
 
-        system.modelChange();
+        system.modelChangeByImmediateAdjacency();
 
         assertArrayEquals(STEP2, system.getLayout());
         assertEquals(71, system.countOccupiedSeats());
@@ -58,7 +59,7 @@ class SeatingSystemTest {
     void step2() {
         SeatingSystem system = new SeatingSystem(STEP2);
 
-        system.modelChange();
+        system.modelChangeByImmediateAdjacency();
 
         assertArrayEquals(STEP3, system.getLayout());
         assertEquals(20, system.countOccupiedSeats());
@@ -68,7 +69,7 @@ class SeatingSystemTest {
     void step3() {
         SeatingSystem system = new SeatingSystem(STEP3);
 
-        system.modelChange();
+        system.modelChangeByImmediateAdjacency();
 
         assertEquals(51, system.countOccupiedSeats());
     }
@@ -87,7 +88,7 @@ class SeatingSystemTest {
             + "#.#L#L#.##\n").getBytes();
         SeatingSystem system = new SeatingSystem(layout);
 
-        final int occupiedSeats = system.modelOccupiedSeats();
+        final int occupiedSeats = system.modelByOccupiedImmediatelyAdjacentSeats();
 
         assertArrayEquals(layout, system.getLayout());
         assertEquals(37, occupiedSeats);
