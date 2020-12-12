@@ -15,11 +15,11 @@ public class Day12 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day12.txt")) {
-            final Position cur = new Position();
+            final Ship ship = new Ship(new Point(0, 0), new Waypoint(new Point(10, 1)));
             toActionStream(requireNonNull(input))
-                .forEach(cur::exec);
+                .forEach(ship::exec);
 
-            log.info("Answer: {}", cur.manhattanDistance());
+            log.info("Answer: {}", ship.manhattanDistance());
         }
     }
 
