@@ -14,4 +14,10 @@ class ShuttleSearchTest {
 
         assertEquals(295, shuttle.busMultipliedByWaitMinutes());
     }
+    @Test
+    void name2() {
+        final ShuttleSearch shuttle = new ShuttleSearch(939, List.of(7, 13, 0, 0, 59, 0, 31, 19));
+
+        assertEquals(1068781, shuttle.nextTimeMatchingOffset());
+    }
 }

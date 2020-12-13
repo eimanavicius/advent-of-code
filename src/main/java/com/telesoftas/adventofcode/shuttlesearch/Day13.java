@@ -18,6 +18,7 @@ public class Day13 {
             final ShuttleSearch shuttle = toShuttleSearch(requireNonNull(input));
 
             log.info("Answer: {}", shuttle.busMultipliedByWaitMinutes());
+            log.info("Answer: {}", shuttle.nextTimeMatchingOffset());
 
         }
     }
@@ -28,7 +29,7 @@ public class Day13 {
         final List<Integer> busses = scanner
             .useDelimiter("[,\\n]")
             .tokens()
-            .filter(s -> !"x".equals(s))
+            .map(s -> "x".equals(s) ? "0" : s)
             .map(Integer::valueOf)
             .collect(toList());
         return new ShuttleSearch(departure, busses);
