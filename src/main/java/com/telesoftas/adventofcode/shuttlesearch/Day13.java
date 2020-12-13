@@ -29,7 +29,7 @@ public class Day13 {
         final List<Integer> busses = scanner
             .useDelimiter("[,\\n]")
             .tokens()
-            .map(s -> "x".equals(s) ? "0" : s)
+            .map(s -> "x".equals(s) ? "1" : s)
             .map(Integer::valueOf)
             .collect(toList());
         return new ShuttleSearch(departure, busses);
