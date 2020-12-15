@@ -20,10 +20,10 @@ public class Day8 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day8.txt")) {
-            final List<Intructution> instructions = new BufferedReader(new InputStreamReader(requireNonNull(input)))
+            final List<Instruction> instructions = new BufferedReader(new InputStreamReader(requireNonNull(input)))
                 .lines()
                 .map(s -> s.split(" "))
-                .map(parts -> new Intructution(parts[0], parseInt(parts[1])))
+                .map(parts -> new Instruction(parts[0], parseInt(parts[1])))
                 .collect(toList());
 
             Set<Integer> prev = new HashSet<>();
@@ -39,19 +39,19 @@ public class Day8 {
         }
     }
 
-    private static Integer tryRemoveInfiniteLoop(List<Intructution> instructions, Set<Integer> previousPositions) {
+    private static Integer tryRemoveInfiniteLoop(List<Instruction> instructions, Set<Integer> previousPositions) {
         for (int position : previousPositions) {
-            final Intructution instr = instructions.get(position);
-            if ("jmp".equals(instr.getCommand())) {
-                final ArrayList<Intructution> update = new ArrayList<>(instructions);
+            final Instruction instr = instructions.get(position);
+            if ("jmp".equals(instr.command())) {
+                final ArrayList<Instruction> update = new ArrayList<>(instructions);
                 update.set(position, instr.withCommand("nop"));
                 try {
                     return runProgram(update);
                 } catch (LoopException loopException) {
                     // try different
                 }
-            } else if ("nop".equals(instr.getCommand())) {
-                final ArrayList<Intructution> update = new ArrayList<>(instructions);
+            } else if ("nop".equals(instr.command())) {
+                final ArrayList<Instruction> update = new ArrayList<>(instructions);
                 update.set(position, instr.withCommand("jmp"));
                 try {
                     return runProgram(update);
@@ -63,11 +63,11 @@ public class Day8 {
         return null;
     }
 
-    private static int runProgram(List<Intructution> instructions) throws LoopException {
+    private static int runProgram(List<Instruction> instructions) throws LoopException {
         return runProgram(instructions, new HashSet<>());
     }
 
-    private static int runProgram(List<Intructution> instructions, Set<Integer> prev) throws LoopException {
+    private static int runProgram(List<Instruction> instructions, Set<Integer> prev) throws LoopException {
         int sum = 0;
         int jump;
         for (int i = 0; i < instructions.size(); i += jump) {
@@ -76,11 +76,11 @@ public class Day8 {
             }
             prev.add(i);
             jump = 1;
-            final Intructution instr = instructions.get(i);
-            if ("acc".equals(instr.getCommand())) {
-                sum += instr.getValue();
-            } else if ("jmp".equals(instr.getCommand())) {
-                jump = instr.getValue();
+            final Instruction instr = instructions.get(i);
+            if ("acc".equals(instr.command())) {
+                sum += instr.value();
+            } else if ("jmp".equals(instr.command())) {
+                jump = instr.value();
             }
         }
         return sum;
