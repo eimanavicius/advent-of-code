@@ -4,27 +4,27 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2
 public class Day15 {
 
     public static void main(String[] args) throws IOException {
-        int lastNumber = lastNumberSpokenAfter2020Turns(List.of(12, 20, 0, 6, 1, 17, 7));
+        final int[] seed = {12, 20, 0, 6, 1, 17, 7};
 
-        log.info("Answer: {}", lastNumber);
+        log.info("Answer: {}", lastNumberSpokenAfter(2020, seed));
     }
 
-    public static int lastNumberSpokenAfter2020Turns(List<Integer> seed) {
+    public static int lastNumberSpokenAfter(int turns, int... seed) {
         Map<Integer, Integer> repetitions = new HashMap<>();
 
-        for (int i = 1; i < seed.size(); i++) {
-            repetitions.put(seed.get(i - 1), i);
+        for (int i = 1; i < seed.length; i++) {
+            repetitions.put(seed[i - 1], i);
         }
-        int lastNumber = seed.get(seed.size() - 1);
 
-        for (int turn = seed.size(); turn < 2020; turn++) {
+        int lastNumber = seed[seed.length - 1];
+
+        for (int turn = seed.length; turn < turns; turn++) {
             if (repetitions.containsKey(lastNumber)) {
                 final int spokenTurn = repetitions.get(lastNumber);
                 repetitions.put(lastNumber, turn);
@@ -34,6 +34,7 @@ public class Day15 {
                 lastNumber = 0;
             }
         }
+
         return lastNumber;
     }
 }

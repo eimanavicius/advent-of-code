@@ -2,17 +2,15 @@ package com.telesoftas.adventofcode.rambunctiousrecitation;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Day15RambunctiousRecitationTest {
 
     @Test
     void sample() {
-        final List<Integer> seed = List.of(0, 3, 6);
+        final int[] seed = new int[]{0, 3, 6};
 
-        final int lastNumber = Day15.lastNumberSpokenAfter2020Turns(seed);
+        final int lastNumber = Day15.lastNumberSpokenAfter(2020, seed);
 
         assertEquals(436, lastNumber);
     }
