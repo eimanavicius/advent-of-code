@@ -13,6 +13,7 @@ public class Day15 {
         final int[] seed = {12, 20, 0, 6, 1, 17, 7};
 
         log.info("Answer: {}", lastNumberSpokenAfter(2020, seed));
+        log.info("Answer: {}", lastNumberSpokenAfter(30_000_000, seed));
     }
 
     public static int lastNumberSpokenAfter(int turns, int... seed) {
