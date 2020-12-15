@@ -32,32 +32,36 @@ public class Day8 {
             try {
                 sum = runProgram(instructions, prev);
             } catch (LoopException e) {
+                log.info("Part 1 answer: {}", e.getSum());
+
                 sum = tryRemoveInfiniteLoop(instructions, prev);
             }
 
-            log.info("Answer: {}", sum);
+            log.info("Part 2 answer: {}", sum);
         }
     }
 
     private static Integer tryRemoveInfiniteLoop(List<Instruction> instructions, Set<Integer> previousPositions) {
         for (int position : previousPositions) {
             final Instruction instr = instructions.get(position);
-            if ("jmp".equals(instr.command())) {
-                final ArrayList<Instruction> update = new ArrayList<>(instructions);
-                update.set(position, instr.withCommand("nop"));
-                try {
-                    return runProgram(update);
-                } catch (LoopException loopException) {
-                    // try different
-                }
-            } else if ("nop".equals(instr.command())) {
-                final ArrayList<Instruction> update = new ArrayList<>(instructions);
-                update.set(position, instr.withCommand("jmp"));
-                try {
-                    return runProgram(update);
-                } catch (LoopException loopException) {
-                    // try different
-                }
+
+            if ("acc".equals(instr.command())) {
+                continue;
+            }
+
+            String newCmd = switch (instr.command()) {
+                case "jmp" -> "nop";
+                case "nop" -> "jmp";
+                default -> throw new IllegalStateException("Unexpected value: " + instr.command());
+            };
+
+            final ArrayList<Instruction> update = new ArrayList<>(instructions);
+            update.set(position, instr.withCommand(newCmd));
+
+            try {
+                return runProgram(update);
+            } catch (LoopException loopException) {
+                // try different
             }
         }
         return null;
