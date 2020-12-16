@@ -20,6 +20,7 @@ public class Day16 {
             final TicketTranslation tickets = toTicketTranslation(requireNonNull(input));
 
             log.info("Answer: {}", tickets.ticketScanningErrorRate());
+            log.info("Answer: {}", tickets.departureFieldsProduct());
         }
     }
 
@@ -34,8 +35,9 @@ public class Day16 {
 
         // your ticket:
         scanner.nextLine();
+        Ticket myTicket = null;
         for (String ticketLine = scanner.nextLine(); !ticketLine.isBlank(); ticketLine = scanner.nextLine()) {
-            // skip my ticket for now
+            myTicket = new Ticket(stream(ticketLine.split(",")).map(Integer::valueOf).collect(toList()));
         }
 
         // nearby tickets:
@@ -45,6 +47,6 @@ public class Day16 {
             .map(ticketLine -> new Ticket(stream(ticketLine.split(",")).map(Integer::valueOf).collect(toList())))
             .collect(toList());
 
-        return new TicketTranslation(new RuleSet(rules), tickets);
+        return new TicketTranslation(new RuleSet(rules), tickets, myTicket);
     }
 }
