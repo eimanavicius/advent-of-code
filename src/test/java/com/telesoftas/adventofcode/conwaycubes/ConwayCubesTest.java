@@ -11,12 +11,10 @@ class ConwayCubesTest {
 
     @BeforeEach
     void setUp() {
-        conwayCubes = new ConwayCubes(new byte[][][]{
-            {
-                {'.', '#', '.'},
-                {'.', '.', '#'},
-                {'#', '#', '#'},
-            },
+        conwayCubes = new ConwayCubes(new byte[][]{
+            {'.', '#', '.'},
+            {'.', '.', '#'},
+            {'#', '#', '#'},
         });
     }
 
@@ -24,21 +22,21 @@ class ConwayCubesTest {
     void after_one_cycle() {
         final ConwayCubes cycle1 = conwayCubes.executeBootUp();
 
-        assertEquals(11, cycle1.activeCubes());
+        assertEquals(29, cycle1.activeCubes());
     }
 
     @Test
     void after_two_cycle() {
-        assertEquals(21, conwayCubes.activeCubesAfterCycles(2));
+        assertEquals(60, conwayCubes.activeCubesAfterCycles(2));
     }
 
     @Test
     void after_three_cycle() {
-        assertEquals(38, conwayCubes.activeCubesAfterCycles(3));
+        assertEquals(320, conwayCubes.activeCubesAfterCycles(3));
     }
 
     @Test
     void after_six_cycle() {
-        assertEquals(112, conwayCubes.activeCubesAfterCycles(6));
+        assertEquals(848, conwayCubes.activeCubesAfterCycles(6));
     }
 }

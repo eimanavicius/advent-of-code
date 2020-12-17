@@ -6,17 +6,16 @@ import lombok.extern.log4j.Log4j2;
 public class Day17 {
 
     public static void main(String[] args) {
-        byte[][][] grid = new byte[][][]{
-            new byte[][]{
-                ".#.####.".getBytes(),
-                ".#...##.".getBytes(),
-                "..###.##".getBytes(),
-                "#..#.#.#".getBytes(),
-                "#..#....".getBytes(),
-                "#.####..".getBytes(),
-                "##.##..#".getBytes(),
-                "#.#.#..#".getBytes()
-            }
+        byte[][] grid = new byte[][]{
+            ".#.####.".getBytes(),
+            ".#...##.".getBytes(),
+            "..###.##".getBytes(),
+            "#..#.#.#".getBytes(),
+            "#..#....".getBytes(),
+            "#.####..".getBytes(),
+            "##.##..#".getBytes(),
+            "#.#.#..#".getBytes()
+
         };
 
         final ConwayCubes conwayCubes = new ConwayCubes(grid);
