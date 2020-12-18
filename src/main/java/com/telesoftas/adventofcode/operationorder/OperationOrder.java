@@ -1,32 +1,55 @@
 package com.telesoftas.adventofcode.operationorder;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Long.parseLong;
 import static java.lang.String.valueOf;
 
+@UtilityClass
 public class OperationOrder {
 
-    static long evaluateExpression(String expression) {
-        final Pattern pattern = Pattern.compile("\\(([0-9+* ]+)\\)");
+    public static final Pattern PARENTHESES = Pattern.compile("\\(([0-9+* ]+)\\)");
+    public static final Pattern ADDITION = Pattern.compile("(\\d+ \\+ \\d+)");
 
+    static long evaluateExpression(String expression) {
         while (expression.indexOf('(') != -1) {
-            final Matcher matcher = pattern.matcher(expression);
+            final Matcher matcher = PARENTHESES.matcher(expression);
             while (matcher.find()) {
                 expression = matcher.replaceAll(matchResult -> valueOf(evaluateExpression(matchResult.group(1))));
             }
         }
 
-        final String[] members = expression.split(" ");
-        return evaluateExpression(members);
+        return evaluateExpression(expression.split(" "));
+    }
+
+    public static long evaluateExpressionWithAdditionPrecedence(String expression) {
+        while (expression.indexOf('(') != -1) {
+            final Matcher matcher = PARENTHESES.matcher(expression);
+            while (matcher.find()) {
+                expression = matcher.replaceAll(m -> valueOf(evaluateExpressionWithAdditionPrecedence(m.group(1))));
+            }
+        }
+
+        while (expression.indexOf('+') != -1) {
+            final Matcher matcher = ADDITION.matcher(expression);
+            while (matcher.find()) {
+                expression = matcher.replaceAll(matchResult -> {
+                    final String[] parts = matchResult.group(1).split(" ");
+                    return valueOf(operation(parseLong(parts[0]), parts[1], parseLong(parts[2])));
+                });
+            }
+        }
+
+        return evaluateExpression(expression.split(" "));
     }
 
     static long evaluateExpression(String[] members) {
         long value = 0;
         String op = "+";
-        for (int i = 0; i < members.length; i++) {
-            String member = members[i];
+        for (String member : members) {
             if ("+".equals(member) || "*".equals(member)) {
                 op = member;
                 continue;
