@@ -22,14 +22,32 @@ public class Day19 {
             final MonsterMessages messages = toMonsterMessages(requireNonNull(input));
 
             log.info("Answer: {}", messages.countValidMessages());
+
+            log.info("Answer: {}", messages.countLoopValidMessages());
         }
     }
 
     public static MonsterMessages toMonsterMessages(InputStream input) {
         final Scanner scanner = new Scanner(input);
 
+        RuleSet rules = readRuleSet(scanner);
+
+        List<String> messages = scanner.useDelimiter("\\n")
+            .tokens()
+            .collect(toList());
+
+        return new MonsterMessages(rules, messages);
+    }
+
+    static RuleSet readRuleSet(Scanner scanner) {
         RuleSet rules = new RuleSet();
-        for (String rule = scanner.nextLine(); !rule.isBlank(); rule = scanner.nextLine()) {
+
+        do {
+            final String rule = scanner.nextLine();
+            if (rule.isBlank()) {
+                return rules;
+            }
+
             final String[] parts = rule.split(": | \\| ");
             if (parts[1].charAt(0) == '"') {
                 rules.putSymbolMatch(parseInt(parts[0]), parts[1].charAt(1));
@@ -44,12 +62,8 @@ public class Day19 {
                 );
             }
             rules.putSequenceMatch(parseInt(parts[0]), seq);
-        }
+        } while (scanner.hasNextLine());
 
-        List<String> messages = scanner.useDelimiter("\\n")
-            .tokens()
-            .collect(toList());
-
-        return new MonsterMessages(rules, messages);
+        return rules;
     }
 }
