@@ -19,6 +19,7 @@ public class Day21 {
             final AllergenAssessment allergens = toAllergenAssessment(requireNonNull(input));
 
             log.info("Answer: {}", allergens.ingredientsWithoutAllergensAmount());
+            log.info("Answer: {}", allergens.canonicalDangerousIngredientList());
         }
     }
 

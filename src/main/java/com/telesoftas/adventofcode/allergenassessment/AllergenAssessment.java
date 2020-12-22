@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import static java.util.function.Predicate.not;
+import static java.util.stream.Collectors.joining;
 
 public record AllergenAssessment(List<Food> foods) {
 
@@ -48,5 +50,12 @@ public record AllergenAssessment(List<Food> foods) {
                 });
         }
         return ingredient2allergen;
+    }
+
+    public String canonicalDangerousIngredientList() {
+        return ingredientsWithAllergen().entrySet().stream()
+            .sorted(Entry.comparingByValue())
+            .map(Entry::getKey)
+            .collect(joining(","));
     }
 }
