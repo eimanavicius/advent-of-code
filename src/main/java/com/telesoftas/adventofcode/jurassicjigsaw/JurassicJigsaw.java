@@ -5,13 +5,13 @@ import java.util.List;
 
 public class JurassicJigsaw {
 
-    private final List<Tile> tiles;
+    List<List<Tile>> image;
 
-    public JurassicJigsaw(List<Tile> tiles) {
-        this.tiles = tiles;
+    public JurassicJigsaw(List<List<Tile>> image) {
+        this.image = image;
     }
 
-    public long multiplyCornerTileIds() {
+    public static JurassicJigsaw fromTilesList(List<Tile> tiles) {
         final List<Tile> remainingTiles = new ArrayList<>(tiles);
 
         List<List<Tile>> image = new ArrayList<>();
@@ -35,15 +35,10 @@ public class JurassicJigsaw {
             image.add(line);
         }
 
-        final List<Tile> firstLine = image.get(0);
-        final List<Tile> lastLine = image.get(image.size() - 1);
-        return firstLine.get(0).id()
-            * firstLine.get(firstLine.size() - 1).id()
-            * lastLine.get(0).id()
-            * lastLine.get(lastLine.size() - 1).id();
+        return new JurassicJigsaw(image);
     }
 
-    private Tile findBottomTileFor(Tile tile, List<Tile> remainingTiles) {
+    private static Tile findBottomTileFor(Tile tile, List<Tile> remainingTiles) {
         final Tile bottomTile = findTileByRightBorderIn(tile.findBottomBorder(), remainingTiles);
         if (null == bottomTile) {
             return null;
@@ -54,7 +49,7 @@ public class JurassicJigsaw {
         return bottomTile;
     }
 
-    private Tile findTopTileFor(Tile tile, List<Tile> remainingTiles) {
+    private static Tile findTopTileFor(Tile tile, List<Tile> remainingTiles) {
         final Tile topTile = findTileByRightBorderIn(tile.findTopBorder(), remainingTiles);
         if (null == topTile) {
             return null;
@@ -64,7 +59,7 @@ public class JurassicJigsaw {
         return topTile;
     }
 
-    private List<Tile> findLine(List<Tile> remainingTiles, Tile start) {
+    private static List<Tile> findLine(List<Tile> remainingTiles, Tile start) {
         final List<Tile> line = new ArrayList<>();
         Tile next = start;
         line.add(next);
@@ -91,7 +86,7 @@ public class JurassicJigsaw {
         return line;
     }
 
-    private Tile findTileByRightBorderIn(char[] border, List<Tile> tiles) {
+    private static Tile findTileByRightBorderIn(char[] border, List<Tile> tiles) {
         for (Tile tile : tiles) {
             if (tile.tryRotateAndFlipUntilLeftMatch(border)) {
                 return tile;
@@ -100,12 +95,21 @@ public class JurassicJigsaw {
         return null;
     }
 
-    private Tile findTileByLeftBorderIn(char[] border, List<Tile> tiles) {
+    private static Tile findTileByLeftBorderIn(char[] border, List<Tile> tiles) {
         for (Tile tile : tiles) {
             if (tile.tryRotateAndFlipUntilRightMatch(border)) {
                 return tile;
             }
         }
         return null;
+    }
+
+    public long multiplyCornerTileIds() {
+        final List<Tile> firstLine = image.get(0);
+        final List<Tile> lastLine = image.get(image.size() - 1);
+        return firstLine.get(0).id()
+            * firstLine.get(firstLine.size() - 1).id()
+            * lastLine.get(0).id()
+            * lastLine.get(lastLine.size() - 1).id();
     }
 }

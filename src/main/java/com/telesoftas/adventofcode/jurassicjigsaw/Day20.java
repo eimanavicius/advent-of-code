@@ -35,6 +35,6 @@ public class Day20 {
                 }
                 return new Tile(id, map);
             })
-            .collect(collectingAndThen(toList(), JurassicJigsaw::new));
+            .collect(collectingAndThen(toList(), JurassicJigsaw::fromTilesList));
     }
 }
