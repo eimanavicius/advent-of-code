@@ -4,6 +4,33 @@ import static java.util.Arrays.compare;
 
 public record Tile(long id, char[][] map) {
 
+    public int searchFullSeaForMonsters() {
+        int monsters = 0;
+        for (int i = 0; i < map.length - 2; i++) {
+            for (int j = 0; j < map[i].length - 19; j++) {
+                if (isSeaMonster(i, j)) {
+                    monsters++;
+                }
+            }
+        }
+        return monsters;
+    }
+
+    public boolean isSeaMonster(int i, int j) {
+        //                  #
+        //#    ##    ##    ###
+        // #  #  #  #  #  #
+        return map[i][j + 18] == '#'
+
+            && map[i + 1][j] == '#' && map[i + 1][j + 5] == '#' && map[i + 1][j + 6] == '#'
+            && map[i + 1][j + 11] == '#' && map[i + 1][j + 12] == '#' && map[i + 1][j + 17] == '#'
+            && map[i + 1][j + 18] == '#' && map[i + 1][j + 19] == '#'
+
+            && map[i + 2][j + 1] == '#' && map[i + 2][j + 4] == '#' && map[i + 2][j + 7] == '#'
+            && map[i + 2][j + 10] == '#' && map[i + 2][j + 13] == '#' && map[i + 2][j + 16] == '#'
+            ;
+    }
+
     public char[] findTopBorder() {
         return map[0];
     }
@@ -226,5 +253,17 @@ public record Tile(long id, char[][] map) {
             }
         }
         return true;
+    }
+
+    public int roughness() {
+        int roughness = 0;
+        for (char[] line : map) {
+            for (char point : line) {
+                if (point == '#') {
+                    roughness++;
+                }
+            }
+        }
+        return roughness;
     }
 }

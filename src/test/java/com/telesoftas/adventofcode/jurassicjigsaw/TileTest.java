@@ -2,6 +2,7 @@ package com.telesoftas.adventofcode.jurassicjigsaw;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TileTest {
@@ -78,5 +79,40 @@ class TileTest {
             {'2', '6', 'a', 'e'},
             {'1', '5', '9', 'd'}
         })));
+    }
+
+
+    @Test
+    void one_sea_monster() {
+        char[][] map = {
+            "                  # ".toCharArray(),
+            "#    ##    ##    ###".toCharArray(),
+            " #  #  #  #  #  #   ".toCharArray()
+        };
+
+        assertTrue(new Tile(0, map).isSeaMonster(0, 0));
+    }
+
+    @Test
+    void one_sea_monster_with_offset() {
+        char[][] map = {
+            "                    # ".toCharArray(),
+            "                    # ".toCharArray(),
+            "  #    ##    ##    ###".toCharArray(),
+            "   #  #  #  #  #  #   ".toCharArray()
+        };
+
+        assertTrue(new Tile(0, map).isSeaMonster(1, 2));
+    }
+
+    @Test
+    void no_sea_monster() {
+        char[][] map = {
+            "                    ".toCharArray(),
+            "#    ##    ##    ###".toCharArray(),
+            " #  #  #  #  #  #   ".toCharArray()
+        };
+
+        assertFalse(new Tile(0, map).isSeaMonster(0, 0));
     }
 }

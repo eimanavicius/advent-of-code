@@ -3,6 +3,8 @@ package com.telesoftas.adventofcode.jurassicjigsaw;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.arraycopy;
+
 public class JurassicJigsaw {
 
     List<List<Tile>> image;
@@ -111,5 +113,64 @@ public class JurassicJigsaw {
             * firstLine.get(firstLine.size() - 1).id()
             * lastLine.get(0).id()
             * lastLine.get(lastLine.size() - 1).id();
+    }
+
+    public int determineWaterRoughness() {
+        final Tile tile = joinTilesToMassiveTile();
+
+        int monsters = 0;
+        for (Mutator mutation : List.<Mutator>of(
+            () -> {
+            },
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::flipHorizontally,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::flipVertically,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise,
+            tile::rotateClockwise
+        )) {
+            mutation.mutate();
+
+            monsters = tile.searchFullSeaForMonsters();
+
+            if (monsters > 0) {
+                break;
+            }
+        }
+
+        return tile.roughness() - monsters * 15;
+    }
+
+    private Tile joinTilesToMassiveTile() {
+        final int size = image.get(0).get(0).map().length - 2;
+        final char[][] map = new char[image.size() * size][];
+        for (int i = 0; i < map.length; i++) {
+            map[i] = new char[image.size() * size];
+        }
+        for (int i = 0; i < image.size(); i++) {
+            List<Tile> lines = image.get(i);
+            for (int j = 0; j < lines.size(); j++) {
+                Tile tile = lines.get(j);
+                final char[][] map1 = tile.map();
+                for (int k = 1; k < map1.length - 1; k++) {
+                    final char[] chars = map1[k];
+                    arraycopy(map1[k], 1, map[(i * size) + k - 1], j * size, chars.length - 2);
+                }
+            }
+        }
+        return new Tile(0, map);
+    }
+
+    interface Mutator {
+
+        void mutate();
     }
 }

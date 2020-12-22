@@ -19,6 +19,7 @@ public class Day20 {
             final JurassicJigsaw jigsaw = toJurassicJigsaw(requireNonNull(input));
 
             log.info("Answer: {}", jigsaw.multiplyCornerTileIds());
+            log.info("Answer: {}", jigsaw.determineWaterRoughness());
         }
     }
 
