@@ -13,13 +13,17 @@ public class Day22 {
 
     public static void main(String[] args) throws IOException {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day22.txt")) {
-            final CrabCombat combat = toCrabCombat(requireNonNull(input));
+            final Player[] players = readPlayers(requireNonNull(input));
 
-            log.info("Answer: {}", combat.winningPlayerScore());
+            final CrabCombat crab = new CrabCombat(players[0].clone(), players[1].clone());
+            log.info("Answer: {}", crab.winningPlayerScore());
+
+            final RecursiveCombat recursive = new RecursiveCombat(players[0].clone(), players[1].clone());
+            log.info("Answer: {}", recursive.winningPlayerScore());
         }
     }
 
-    public static CrabCombat toCrabCombat(InputStream input) {
+    private static Player[] readPlayers(InputStream input) {
         final Scanner scanner = new Scanner(input);
 
         Player player1 = readPlayer(scanner);
@@ -29,12 +33,13 @@ public class Day22 {
 
         Player player2 = readPlayer(scanner);
 
-        return new CrabCombat(player1, player2);
+        return new Player[]{player1, player2};
     }
 
     private static Player readPlayer(Scanner scanner) {
+        final String name = scanner.findInLine("\\d+");
         scanner.nextLine();
-        Player player = new Player();
+        Player player = new Player(name);
         while (scanner.hasNextInt()) {
             player.addCardToBottom(scanner.nextInt());
         }
