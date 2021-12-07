@@ -1,12 +1,12 @@
 package com.telesoftas.aoc;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.util.Set;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DistanceTest {
 
@@ -18,11 +18,11 @@ class DistanceTest {
 
         assertAll(
             () -> assertEquals(4, wire.size()),
-            () -> assertEquals(Set.of(
-                new Point(1, 0),
-                new Point(2, 0),
-                new Point(2, 1),
-                new Point(1, 1)
+            () -> assertEquals(Map.of(
+                new Point(1, 0), 1,
+                new Point(2, 0), 2,
+                new Point(2, 1), 3,
+                new Point(1, 1), 4
             ), wire)
         );
     }
