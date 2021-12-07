@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.function.IntBinaryOperator;
 import java.util.stream.IntStream;
 
 public class TheTreacheryOfWhales {
@@ -20,25 +21,27 @@ public class TheTreacheryOfWhales {
     }
 
     public static int findFuelRequiredToAlignPositions(int... positions) {
-        return possiblePositions(positions)
-            .map(positionToAlign -> {
-                return Arrays.stream(positions)
-                    .map(position -> Math.abs(position - positionToAlign))
-                    .sum();
-            })
-            .min().orElseThrow();
+        return findFuelRequiredToAlignPositions(TheTreacheryOfWhales::fuelCost, positions);
     }
-
 
     public static int findFuelRequiredToAlignPositionsWithProgressiveCost(int... positions) {
+        return findFuelRequiredToAlignPositions(TheTreacheryOfWhales::progressiveFuelCost, positions);
+    }
+
+    public static int findFuelRequiredToAlignPositions(IntBinaryOperator fuelCost, int... positions) {
         return possiblePositions(positions)
             .map(positionToAlign -> {
                 return Arrays.stream(positions)
-                    .map(position -> progressiveFuelCost(positionToAlign, position))
+                    .map(position -> fuelCost.applyAsInt(positionToAlign, position))
                     .sum();
             })
             .min().orElseThrow();
     }
+
+    private static int fuelCost(int positionToAlign, int position) {
+        return Math.abs(position - positionToAlign);
+    }
+
 
     private static IntStream possiblePositions(int[] positions) {
         int min = Arrays.stream(positions).min().orElseThrow();
