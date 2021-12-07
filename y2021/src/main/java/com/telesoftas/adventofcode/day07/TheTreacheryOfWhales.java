@@ -2,10 +2,12 @@ package com.telesoftas.adventofcode.day07;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.function.IntBinaryOperator;
+import java.util.function.IntUnaryOperator;
 import java.util.stream.IntStream;
+
+import static java.util.Arrays.stream;
 
 public class TheTreacheryOfWhales {
 
@@ -28,24 +30,23 @@ public class TheTreacheryOfWhales {
         return findFuelRequiredToAlignPositions(TheTreacheryOfWhales::progressiveFuelCost, positions);
     }
 
-    public static int findFuelRequiredToAlignPositions(IntBinaryOperator fuelCost, int... positions) {
+    public static int findFuelRequiredToAlignPositions(IntBinaryOperator fuelCostFormula, int... positions) {
         return possiblePositions(positions)
-            .map(positionToAlign -> {
-                return Arrays.stream(positions)
-                    .map(position -> fuelCost.applyAsInt(positionToAlign, position))
-                    .sum();
-            })
+            .map(alignTo -> stream(positions).map(calculator(fuelCostFormula, alignTo)).sum())
             .min().orElseThrow();
+    }
+
+    private static IntUnaryOperator calculator(IntBinaryOperator fuelCost, int positionToAlign) {
+        return position -> fuelCost.applyAsInt(positionToAlign, position);
     }
 
     private static int fuelCost(int positionToAlign, int position) {
         return Math.abs(position - positionToAlign);
     }
 
-
     private static IntStream possiblePositions(int[] positions) {
-        int min = Arrays.stream(positions).min().orElseThrow();
-        int max = Arrays.stream(positions).max().orElseThrow();
+        int min = stream(positions).min().orElseThrow();
+        int max = stream(positions).max().orElseThrow();
         return IntStream.range(min, max + 1);
     }
 
