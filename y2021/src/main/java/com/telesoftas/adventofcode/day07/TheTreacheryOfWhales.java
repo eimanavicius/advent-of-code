@@ -20,8 +20,7 @@ public class TheTreacheryOfWhales {
     }
 
     public static int findFuelRequiredToAlignPositions(int... positions) {
-        return Arrays.stream(positions)
-            .distinct()
+        return possiblePositions(positions)
             .map(positionToAlign -> {
                 return Arrays.stream(positions)
                     .map(position -> Math.abs(position - positionToAlign))
@@ -32,15 +31,19 @@ public class TheTreacheryOfWhales {
 
 
     public static int findFuelRequiredToAlignPositionsWithProgressiveCost(int... positions) {
-        int min = Arrays.stream(positions).min().orElseThrow();
-        int max = Arrays.stream(positions).max().orElseThrow();
-        return IntStream.range(min, max + 1)
+        return possiblePositions(positions)
             .map(positionToAlign -> {
                 return Arrays.stream(positions)
                     .map(position -> progressiveFuelCost(positionToAlign, position))
                     .sum();
             })
             .min().orElseThrow();
+    }
+
+    private static IntStream possiblePositions(int[] positions) {
+        int min = Arrays.stream(positions).min().orElseThrow();
+        int max = Arrays.stream(positions).max().orElseThrow();
+        return IntStream.range(min, max + 1);
     }
 
     public static int progressiveFuelCost(int positionToAlign, int position) {
