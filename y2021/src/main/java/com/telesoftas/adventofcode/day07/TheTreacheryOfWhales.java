@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.IntStream;
 
 public class TheTreacheryOfWhales {
 
@@ -11,7 +12,10 @@ public class TheTreacheryOfWhales {
         try (InputStream input = ClassLoader.getSystemResourceAsStream("day07.txt")) {
             int[] positions = toNumbersArray(input);
 
+            System.out.println("Part 1:");
             System.out.println(findFuelRequiredToAlignPositions(positions));
+            System.out.println("Part 2:");
+            System.out.println(findFuelRequiredToAlignPositionsWithProgressiveCost(positions));
         }
     }
 
@@ -26,6 +30,25 @@ public class TheTreacheryOfWhales {
             .min().orElseThrow();
     }
 
+
+    public static int findFuelRequiredToAlignPositionsWithProgressiveCost(int... positions) {
+        int min = Arrays.stream(positions).min().orElseThrow();
+        int max = Arrays.stream(positions).max().orElseThrow();
+        return IntStream.range(min, max + 1)
+            .map(positionToAlign -> {
+                return Arrays.stream(positions)
+                    .map(position -> progressiveFuelCost(positionToAlign, position))
+                    .sum();
+            })
+            .min().orElseThrow();
+    }
+
+    public static int progressiveFuelCost(int positionToAlign, int position) {
+        if (position == positionToAlign) {
+            return 0;
+        }
+        return IntStream.range(1, Math.abs(position - positionToAlign) + 1).sum();
+    }
 
     static int[] toNumbersArray(InputStream input) {
         return new Scanner(input)
