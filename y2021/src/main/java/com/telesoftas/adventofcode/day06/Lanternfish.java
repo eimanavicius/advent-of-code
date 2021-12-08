@@ -2,6 +2,7 @@ package com.telesoftas.adventofcode.day06;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Lanternfish {
@@ -12,27 +13,29 @@ public class Lanternfish {
 
             System.out.println("How many lanternfish would there be after 80 days?");
             System.out.println(amountOfLanternFishAfter(80, fishes));
+
+            System.out.println("How many lanternfish would there be after 256 days?");
+            System.out.println(amountOfLanternFishAfter(256, fishes));
         }
     }
 
-    public static int amountOfLanternFishAfter(int days, int[] fishes) {
-        int amount = 0;
+    public static long amountOfLanternFishAfter(int days, int[] fishes) {
+        long[] amounts = new long[days];
         for (int fish : fishes) {
-            amount += singleFishReplication(fish, days);
+            fishReplication(fish, days, amounts, 1);
         }
-        return amount;
-    }
-
-    public static int singleFishReplication(int fishTimer, int days) {
-        int amount = 1;
-        for (int i = 0; i < days; i++) {
-            fishTimer--;
-            if (fishTimer < 0) {
-                amount += singleFishReplication(8, days - i - 1);
-                fishTimer = 6;
+        for (int i = 0; i < amounts.length; i++) {
+            if (amounts[i] > 0) {
+                fishReplication(i + 9, days, amounts, amounts[i]);
             }
         }
-        return amount;
+        return fishes.length + Arrays.stream(amounts).sum();
+    }
+
+    public static void fishReplication(int fishTimer, int days, long[] amounts, long increment) {
+        for (int i = fishTimer; i < days; i += 7) {
+            amounts[i] += increment;
+        }
     }
 
     static int[] toNumbersArray(InputStream input) {
