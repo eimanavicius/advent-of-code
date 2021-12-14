@@ -44,6 +44,24 @@ class SyntaxScoringTest {
     }
 
     @Test
+    void sample_part_2() {
+        long score = SyntaxScoring.findMiddleAutocompleteScore(List.of(
+            "[({(<(())[]>[[{[]{<()<>>",
+            "[(()[<>])]({[<{<<[]>>(",
+            "{([(<{}[<>[]}>{[]{[(<()>",
+            "(((({<>}<{<{<>}{[]{[]{}",
+            "[[<[([]))<([[{}[[()]]]",
+            "[{[{({}]{}}([{[{{{}}([]",
+            "{<[[]]>}<{[{[{[]{()[[[]",
+            "[<(<(<(<{}))><([]([]()",
+            "<{([([[(<>()){}]>(<<{{",
+            "<{([{{}}[<[[[<>{}]]]>[]]"
+        ));
+
+        assertEquals(288957L, score);
+    }
+
+    @Test
     void how_deque_works() {
         Deque<Character> open = new ArrayDeque<>();
 
