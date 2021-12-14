@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class SyntaxScoring {
 
@@ -17,12 +18,6 @@ public class SyntaxScoring {
         '}', '{',
         ']', '[',
         '>', '<'
-    );
-    private static final Map<Character, Integer> CLOSE_TO_SCORE = Map.of(
-        ')', 3,
-        ']', 57,
-        '}', 1197,
-        '>', 25137
     );
 
     public static void main(String[] args) throws IOException {
@@ -35,8 +30,19 @@ public class SyntaxScoring {
     }
 
     public static int findSyntaxErrorScore(List<String> lines) {
+        return streamSubsystems(lines)
+            .mapToInt(subsystem -> {
+                if (subsystem.isCorrupted()) {
+                    return subsystem.getSyntaxErrorScore();
+                }
+                return 0;
+            })
+            .sum();
+    }
+
+    private static Stream<Subsystem> streamSubsystems(List<String> lines) {
         return lines.stream()
-            .mapToInt(line -> {
+            .map(line -> {
                 Deque<Character> open = new ArrayDeque<>();
 
                 for (Character c : line.toCharArray()) {
@@ -45,12 +51,11 @@ public class SyntaxScoring {
                     } else if (CLOSE_TO_OPEN.get(c).equals(open.peek())) {
                         open.pop();
                     } else {
-                        return CLOSE_TO_SCORE.get(c);
+                        return new Subsystem(open, c);
                     }
                 }
 
-                return 0;
-            })
-            .sum();
+                return Subsystem.VALID;
+            });
     }
 }
