@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,6 +23,15 @@ public class Chiton {
 
             System.out.println("What is the lowest total risk of any path from the top left to the bottom right?");
             System.out.println(lowestTotalRisk);
+
+            List<List<Integer>> riskLevelsOfFullMap = expandCave(riskLevels);
+            String targetOfFullMap = (riskLevelsOfFullMap.size() - 1) + "," + (riskLevelsOfFullMap.get(0).size() - 1);
+            int lowestTotalRiskOfFullMap = lowestTotalRisk(toCave(riskLevelsOfFullMap), targetOfFullMap);
+
+            System.out.println(
+                "Using the full map, what is the lowest total risk of any path from the top left to the bottom right?"
+            );
+            System.out.println(lowestTotalRiskOfFullMap);
         }
     }
 
@@ -117,5 +127,49 @@ public class Chiton {
             .lines()
             .map(line -> line.chars().mapToObj(x -> x - '0').toList())
             .toList();
+    }
+
+    public static List<List<Integer>> expandCave(List<List<Integer>> original) {
+        List<List<Integer>> expanded = new ArrayList<>();
+        int size = original.size();
+        int expSize = size * 5;
+
+        for (int i = 0; i < expSize; i++) {
+            expanded.add(new ArrayList<>());
+        }
+
+        List<List<Integer>> inc = original;
+        for (int k = 0; k < 9; k++) {
+            for (int l = 0; l < k + 1; l++) {
+                for (int i = 0; i < size; i++) {
+                    int rowIndex = i + size * l;
+                    if (expanded.size() <= rowIndex || expanded.get(rowIndex).size() >= expSize) {
+                        continue;
+                    }
+                    List<Integer> row = expanded.get(rowIndex);
+                    for (int j = 0; j < size; j++) {
+                        row.add(inc.get(i).get(j));
+                    }
+                }
+            }
+            inc = increment(inc);
+        }
+
+        return expanded;
+    }
+
+    public static List<List<Integer>> increment(List<List<Integer>> original) {
+        List<List<Integer>> inc = new ArrayList<>();
+        int size = original.size();
+        for (int i = 0; i < size; i++) {
+            List<Integer> row = new ArrayList<>();
+            for (int j = 0; j < size; j++) {
+                int risk = original.get(i).get(j) + 1;
+                risk = risk > 9 ? 1 : risk;
+                row.add(risk);
+            }
+            inc.add(row);
+        }
+        return inc;
     }
 }
