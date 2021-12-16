@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class Chiton {
@@ -68,14 +69,14 @@ public class Chiton {
     }
 
     public static int lowestTotalRisk(Cave riskyCave, String target) {
-        calculateShortestPathFromSource(riskyCave, riskyCave.getSource());
+        calculateShortestPathFromSource(riskyCave.getSource());
 
         Wall destination = riskyCave.getWall(target);
 
         return destination.getDistance();
     }
 
-    public static Cave calculateShortestPathFromSource(Cave graph, Wall source) {
+    public static void calculateShortestPathFromSource(Wall source) {
         source.setDistance(0);
 
         Set<Wall> settledWalls = new HashSet<>();
@@ -83,7 +84,7 @@ public class Chiton {
 
         unsettledWalls.add(source);
 
-        while (unsettledWalls.size() != 0) {
+        while (!unsettledWalls.isEmpty()) {
             Wall currentWall = getLowestDistanceWall(unsettledWalls);
             unsettledWalls.remove(currentWall);
             for (Entry<Wall, Integer> adjacencyPair : currentWall.getAdjacentWalls().entrySet()) {
@@ -96,7 +97,6 @@ public class Chiton {
             }
             settledWalls.add(currentWall);
         }
-        return graph;
     }
 
     private static Wall getLowestDistanceWall(Set<Wall> unsettledWalls) {
@@ -108,6 +108,9 @@ public class Chiton {
                 lowestDistance = nodeDistance;
                 lowestDistanceWall = node;
             }
+        }
+        if (lowestDistanceWall == null) {
+            throw new NoSuchElementException();
         }
         return lowestDistanceWall;
     }
@@ -161,10 +164,10 @@ public class Chiton {
     public static List<List<Integer>> increment(List<List<Integer>> original) {
         List<List<Integer>> inc = new ArrayList<>();
         int size = original.size();
-        for (int i = 0; i < size; i++) {
+        for (List<Integer> integers : original) {
             List<Integer> row = new ArrayList<>();
             for (int j = 0; j < size; j++) {
-                int risk = original.get(i).get(j) + 1;
+                int risk = integers.get(j) + 1;
                 risk = risk > 9 ? 1 : risk;
                 row.add(risk);
             }
