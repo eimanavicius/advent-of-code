@@ -1,15 +1,9 @@
 export function part1(input: string) {
-  input.split(/\r?\n/).forEach(line => {
-    console.log(`Line from file: ${line}`);
-  });
-
-  return 'answer 1';
+  return input.split(/\r?\n/)
+    .reduce((count) => count + 1, 0);
 }
 
 export function part2(input: string) {
-  input.split(/\r?\n/).forEach(line => {
-    console.log(`Line from file: ${line}`);
-  });
-
-  return 'answer 2';
+  return input.split(/\r?\n/)
+    .reduce((count) => count + 2, 0);
 }
