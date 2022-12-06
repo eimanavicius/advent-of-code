@@ -5,8 +5,8 @@ let sample: string;
 let input: string;
 
 beforeAll(() => {
-  sample = fs.readFileSync('src/day00/sample.txt', 'utf-8');
-  input = fs.readFileSync('src/day00/input.txt', 'utf-8');
+  sample = fs.readFileSync(__dirname + '/sample.txt', 'utf-8');
+  input = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
 });
 
 test('part 1 sample', () => {

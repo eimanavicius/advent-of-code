@@ -6,8 +6,8 @@ describe('puzzle module', () => {
   let input: string;
   let sample: string;
   beforeAll(() => {
-    input = fs.readFileSync('src/day01/input.txt', 'utf-8');
-    sample = fs.readFileSync('src/day01/sample.txt', 'utf-8');
+    input = fs.readFileSync(__dirname + '/input.txt', 'utf-8');
+    sample = fs.readFileSync(__dirname + '/sample.txt', 'utf-8');
   });
 
   test('part 1 sample', () => {
