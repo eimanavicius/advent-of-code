@@ -1,5 +1,10 @@
-# How to run on INTELLIJ
+# Advent Of Code solutions
 
-set JDK13 in `File -> Project Structure...` ![](./docs/project-structure.png)
+Advent of Code is an Advent calendar of small programming puzzles for a variety of skill sets and skill levels that can
+be solved in any programming language you like. I use it to practice problems solving.
 
-check `File -> Settings... -> Build, Execution, Deployment -> Build Tools -> Gradle -> Gradle JVM` set it to match project or specific jdk ![](./docs/gradle-jvm.png)
+## Structure
+
+* y2019 - Java solutions to 2019 year puzzles (Gradle)
+* y2020 - Java solutions to 2020 year puzzles (Gradle)
+* y2021 - Java solutions to 2021 year puzzles (Gradle)
