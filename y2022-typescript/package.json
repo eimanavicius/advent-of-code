@@ -1,0 +1,16 @@
+{
+  "name": "y2022-typescript",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "@types/jest": "^29.2.4",
+    "ts-jest": "^29.0.3"
+  }
+}
