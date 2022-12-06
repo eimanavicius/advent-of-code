@@ -1,4 +1,4 @@
-export function part1(input: string): string {
+export function part1(input: string) {
   input.split(/\r?\n/).forEach(line => {
     console.log(`Line from file: ${line}`);
   });
@@ -6,7 +6,7 @@ export function part1(input: string): string {
   return 'answer 1';
 }
 
-export function part2(input: string): string {
+export function part2(input: string) {
   input.split(/\r?\n/).forEach(line => {
     console.log(`Line from file: ${line}`);
   });
