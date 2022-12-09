@@ -18,5 +18,10 @@ export function part1(input: string) {
 }
 
 export function part2(input: string) {
-  return -1;
+  return parseMovements(input)
+    .reduce(
+      (grid, move) => move.steps().reduce((g: Grid, m: Pos) => grid.move(m), grid),
+      new Grid(10)
+    )
+    .amountOfPositionsTailVisitedAtLeastOnce();
 }
