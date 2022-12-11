@@ -18,9 +18,9 @@ test('part 1', () => {
 });
 
 test('part 2 sample', () => {
-  expect(part2(sample)).toBe(12);
+  expect(part2(sample)).toBe(2713310158);
 });
 
 test('part 2', () => {
-  expect(part2(input)).toBe(10);
+  expect(part2(input)).toBe(31028998648);
 });
