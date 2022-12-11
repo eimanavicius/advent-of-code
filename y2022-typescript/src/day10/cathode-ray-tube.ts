@@ -23,38 +23,30 @@ class Addx implements Instruction {
   }
 }
 
-class CPU {
-  private cycle = 0;
-  private snapshots: number[][] = [];
-  private readonly emptySprite = '........................................';
-  private sprite: string = '###.....................................';
+class CRT implements Bus {
+  private sprite: string = '';
   private display: string[] = ['', '', '', '', '', '',];
+  private nextNewLine: number = this.wide;
 
-  constructor(
-    private X: number,
-    private nextCapture: number
-  ) {
+  constructor(private readonly wide: number) {
   }
 
-  run(instruction: Instruction): CPU {
-    this.sprite = this.makeSprite();
-    for (let i = 0; i < instruction.cycles; i++) {
-      let column = this.cycle % 40;
-      let row = Math.floor((this.nextCapture-40) / 40);
-      this.display[row] += this.sprite[column] === '#' ? '#' : '.';
-      this.cycle++;
-      if (this.cycle === this.nextCapture) {
-        this.snapshots.push([this.nextCapture, this.X]);
-        this.nextCapture += 40;
-      }
+  onBeforeInstruction(_: number, X: number): void {
+    this.sprite = CRT.makeSprite(X);
+  }
+
+  onBeforeCycle(cycle: number, X: number): void {
+    if (cycle === this.nextNewLine) {
+      this.nextNewLine += this.wide;
     }
-    this.X = instruction.apply(this.X);
-    return this;
+    let column = cycle % this.wide;
+    let row = Math.floor((this.nextNewLine - this.wide) / this.wide);
+    this.display[row] += this.sprite[column] === '#' ? '#' : '.';
   }
 
-  private makeSprite(): string {
-    const sprite = this.emptySprite.split('');
-    const start = (this.X-1) % 40;
+  private static makeSprite(x: number): string {
+    const start = (x - 1) % 40;
+    const sprite = [...Array(40).keys()].map(() => '.');
 
     sprite[start] = '#';
     sprite[start + 1] = '#';
@@ -63,13 +55,70 @@ class CPU {
     return sprite.join('');
   }
 
+  onAfterCycle(cycle: number, X: number): void {
+  }
+
+  draw(): string {
+    return this.display.map(x => x).join('\n');
+  }
+}
+
+class Signals implements Bus {
+  private snapshots: number[][] = [];
+
+  constructor(private nextCapture: number, private readonly step: number = 40) {
+  }
+
+  onAfterCycle(cycle: number, X: number): void {
+    if (cycle === this.nextCapture) {
+      this.snapshots.push([this.nextCapture, X]);
+      this.nextCapture += this.step;
+    }
+  }
+
+  onBeforeCycle(cycle: number, X: number): void {
+    // do nothing
+  }
+
+  onBeforeInstruction(cycle: number, X: number): void {
+    // do nothing
+  }
+
   sumOfSixSignalStrengths(): number {
     return this.snapshots.slice(0, 6)
       .reduce((sum, capture) => sum + (capture[0] * capture[1]), 0);
   }
+}
 
-  drawDisplay(): string {
-    return this.display.map(x => x).join('\n');
+interface Bus {
+  onBeforeInstruction(cycle: number, X: number): void;
+
+  onBeforeCycle(cycle: number, X: number): void;
+
+  onAfterCycle(cycle: number, X: number): void;
+}
+
+class CPU {
+  constructor(
+    private readonly busses: Bus[] = [],
+    private X: number = 1,
+    private cycle = 0,
+  ) {
+  }
+
+  run(instruction: Instruction): CPU {
+    this.trigger('onBeforeInstruction');
+    for (let i = 0; i < instruction.cycles; i++) {
+      this.trigger('onBeforeCycle');
+      this.cycle++;
+      this.trigger('onAfterCycle');
+    }
+    this.X = instruction.apply(this.X);
+    return this;
+  }
+
+  private trigger(event: 'onBeforeCycle' | 'onAfterCycle' | 'onBeforeInstruction'): void {
+    this.busses.forEach(value => value[event](this.cycle, this.X));
   }
 }
 
@@ -80,13 +129,19 @@ function parseInstructions(input: string): Instruction[] {
 }
 
 export function part1(input: string) {
-  return parseInstructions(input)
-    .reduce((cpu: CPU, instruction: Instruction) => cpu.run(instruction), new CPU(1, 20))
-    .sumOfSixSignalStrengths();
+  let signals = new Signals(20);
+  let cpu = new CPU([signals]);
+
+  parseInstructions(input).forEach(cpu.run, cpu);
+
+  return signals.sumOfSixSignalStrengths();
 }
 
 export function part2(input: string) {
-  return parseInstructions(input)
-    .reduce((cpu: CPU, instruction: Instruction) => cpu.run(instruction), new CPU(1, 40))
-    .drawDisplay();
+  let display = new CRT(40);
+  let cpu = new CPU([display]);
+
+  parseInstructions(input).forEach(cpu.run, cpu);
+
+  return display.draw();
 }
