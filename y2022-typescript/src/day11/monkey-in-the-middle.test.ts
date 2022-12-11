@@ -22,5 +22,5 @@ test('part 2 sample', () => {
 });
 
 test('part 2', () => {
-  expect(part2(input)).toBe(31028998648);
+  expect(part2(input)).toBe(20151213744);
 });

@@ -1,11 +1,21 @@
-class MonkeyInTheMiddle {
-  private supermod = 1;
+type Operation = (a: number) => number;
+type Relief = (value: number, operation: Operation) => number;
 
+interface Tester {
+  (worryLevel: number): number;
+
+  divider: number;
+}
+
+class MonkeyInTheMiddle {
   private listOfMonkeys: Monkey[] = [];
 
   private mapOfMonkeys: { [key: number]: Monkey } = {};
 
-  static fromString(input: string): MonkeyInTheMiddle {
+  constructor(public readonly relief: Relief) {
+  }
+
+  static fromString(input: string, relief: Relief): MonkeyInTheMiddle {
     return input.split(/\n\n/)
       .map(m => m.split('\n'))
       .reduce((monkeys, lines, index) => {
@@ -18,26 +28,25 @@ class MonkeyInTheMiddle {
         const trueIndex = parseInt(lines[4].split(' ').pop() as string);
         const falseIndex = parseInt(lines[5].split(' ').pop() as string);
         const test = (worryLevel: number) => worryLevel % divider == 0 ? trueIndex : falseIndex;
+        test.divider = divider;
 
-        monkeys.manageableRelief(divider);
-        monkeys.add(index, new Monkey(items, operation, test, (x: number, operation: (a: number) => number) => monkeys.relief(x, operation)));
+        monkeys.add(
+          index,
+          new Monkey(
+            items,
+            operation,
+            test,
+            (x: number, operation: Operation) => monkeys.relief(x, operation)
+          )
+        );
 
         return monkeys;
-      }, new MonkeyInTheMiddle());
+      }, new MonkeyInTheMiddle(relief));
   }
 
   private add(index: number, monkey: Monkey): void {
     this.listOfMonkeys.push(monkey);
     this.mapOfMonkeys[index] = monkey;
-  }
-
-  private manageableRelief(divider: number): void {
-    this.supermod *= divider;
-  }
-
-  private relief(value: number, operation: (a: number) => number): number {
-    return Math.floor(operation(value) / 3);
-    // return operation(value % this.supermod);
   }
 
   play(rounds: number): void {
@@ -58,6 +67,10 @@ class MonkeyInTheMiddle {
 
     return this.listOfMonkeys[0].activity() * this.listOfMonkeys[1].activity();
   }
+
+  forEachMonkey(callback: (monkey: Monkey) => void): void {
+    this.listOfMonkeys.forEach(callback);
+  }
 }
 
 class Monkey {
@@ -65,9 +78,9 @@ class Monkey {
 
   constructor(
     private items: number[],
-    private readonly operation: (a: number) => number,
-    private readonly test: (worryLevel: number) => number,
-    private relief: (x: number, operation: (a: number) => number) => number
+    public readonly operation: Operation,
+    public readonly test: Tester,
+    public readonly relief: (x: number, operation: Operation) => number
   ) {
   }
 
@@ -100,7 +113,7 @@ class ThrownItem {
   }
 }
 
-function parseOperation(line: string): (a: number) => number {
+function parseOperation(line: string): Operation {
   const sign = line[23];
   const part2 = line.split(sign + ' ')[1];
   if (part2 === 'old') {
@@ -111,15 +124,37 @@ function parseOperation(line: string): (a: number) => number {
 }
 
 export function part1(input: string) {
-  let ms = MonkeyInTheMiddle.fromString(input);
+  let ms = MonkeyInTheMiddle.fromString(
+    input,
+    (value: number, operation: Operation): number => Math.floor(operation(value) / 3)
+  );
 
   ms.play(20);
 
   return ms.top2ActiveMonkeys();
 }
 
+class Reliever {
+  private manageableRelief = 1;
+
+  relief(): Relief {
+    return (value: number, operation: Operation): number => {
+      return operation(value % this.manageableRelief);
+    };
+  }
+
+  trackRelief(): (monkey: Monkey) => void {
+    return (monkey: Monkey) => {
+      this.manageableRelief *= monkey.test.divider || 1;
+    };
+  }
+}
+
 export function part2(input: string) {
-  let ms = MonkeyInTheMiddle.fromString(input);
+  const reliever = new Reliever();
+
+  let ms = MonkeyInTheMiddle.fromString(input, reliever.relief());
+  ms.forEachMonkey(reliever.trackRelief());
 
   ms.play(10000);
 
