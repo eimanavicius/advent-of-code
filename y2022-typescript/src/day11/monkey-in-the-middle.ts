@@ -15,6 +15,16 @@ class MonkeyInTheMiddle {
   constructor(public readonly relief: Relief) {
   }
 
+  static parseOperation(line: string): Operation {
+    const sign = line[23];
+    const part2 = line.split(sign + ' ')[1];
+    if (part2 === 'old') {
+      return sign === '*' ? (a: number) => a * a : (a: number) => a + a;
+    }
+    const amount = parseInt(part2);
+    return sign === '*' ? (a: number) => a * amount : (a: number) => a + amount;
+  }
+
   static fromString(input: string, relief: Relief): MonkeyInTheMiddle {
     return input.split(/\n\n/)
       .map(m => m.split('\n'))
@@ -22,7 +32,7 @@ class MonkeyInTheMiddle {
 
         const items = lines[1].split(': ')[1].split(', ').map((x) => parseInt(x));
 
-        const operation = parseOperation(lines[2]);
+        const operation = this.parseOperation(lines[2]);
 
         const divider = parseInt(lines[3].split(' ').pop() as string);
         const trueIndex = parseInt(lines[4].split(' ').pop() as string);
@@ -111,16 +121,6 @@ class ThrownItem {
     this.monkey = monkey;
     this.item = item;
   }
-}
-
-function parseOperation(line: string): Operation {
-  const sign = line[23];
-  const part2 = line.split(sign + ' ')[1];
-  if (part2 === 'old') {
-    return sign === '*' ? (a: number) => a * a : (a: number) => a + a;
-  }
-  const amount = parseInt(part2);
-  return sign === '*' ? (a: number) => a * amount : (a: number) => a + amount;
 }
 
 export function part1(input: string) {
