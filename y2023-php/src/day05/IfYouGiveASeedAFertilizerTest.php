@@ -39,6 +39,6 @@ final class IfYouGiveASeedAFertilizerTest extends TestCase
     #[Test]
     public function part_2(): void
     {
-        $this->assertThat(IfYouGiveASeedAFertilizer::part2(self::$input), $this->equalTo(10));
+        $this->assertThat(IfYouGiveASeedAFertilizer::part2(self::$input), $this->equalTo(52510809));
     }
 }

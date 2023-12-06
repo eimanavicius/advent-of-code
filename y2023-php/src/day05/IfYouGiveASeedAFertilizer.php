@@ -22,17 +22,17 @@ final class IfYouGiveASeedAFertilizer
         $seeds = array_map(static fn($s) => (int)$s, explode(" ", explode(': ', $sections[0])[1]));
         $maps = self::extractMaps($sections);
 
-        $mins = [];
+        $min = PHP_INT_MAX;
         for ($i = 0, $iMax = count($seeds); $i < $iMax; $i += 2) {
-            $range = [];
             for ($j = 0; $j < $seeds[$i + 1]; $j++) {
-                $range[] = $seeds[$i] + $j;
+                $m = self::findLowestSeedLocation([$seeds[$i] + $j], $maps);
+                if ($m < $min) {
+                    $min = $m;
+                }
             }
-            $mins[] = self::findLowestSeedLocation($range, $maps);
-            echo $i, PHP_EOL;
         }
 
-        return min($mins);
+        return $min;
     }
 
     private static function extractMaps(array|false $sections): array
@@ -61,16 +61,23 @@ final class IfYouGiveASeedAFertilizer
     private static function findLowestSeedLocation(array $seeds, array $maps): mixed
     {
         foreach ($seeds as &$seed) {
-            foreach ($maps as $map) {
-                foreach ($map as $range) {
-                    if ($range[1] <= $seed && $seed < $range[1] + $range[2]) {
-                        $seed = $range[0] + ($seed - $range[1]);
-                        break;
-                    }
+            $seed = self::seedLocation($seed, $maps);
+        }
+
+        return min($seeds);
+    }
+
+    private static function seedLocation(int $seed, array $maps): mixed
+    {
+        foreach ($maps as $map) {
+            foreach ($map as $range) {
+                if ($range[1] <= $seed && $seed < $range[1] + $range[2]) {
+                    $seed = $range[0] + ($seed - $range[1]);
+                    break;
                 }
             }
         }
 
-        return min($seeds);
+        return $seed;
     }
 }
